@@ -1,26 +1,34 @@
-import { cn } from '@/lib/utils'
-import '@/styles/globals.css'
-import { Inter } from 'next/font/google'
-import Navbar from "@/components/Navbar"
+import { cn } from "@/lib/utils";
+import "@/styles/globals.css";
+import { Inter } from "next/font/google";
+import Navbar from "@/components/Navbar";
+import Toaster from "@/components/ui/Toaster";
 
 export const metadata = {
-  title: 'ChessMates',
-  description: 'A social media website for chess enthusiast.',
-}
+  title: "ChessMates",
+  description: "A social media website for chess enthusiast.",
+};
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang='en' className={cn('bg=white text-slate-900 antialias light', inter.className)}>
-      <body className='min-h-screen pt-12 bg-slate-50 antialiased ' >
+    <html
+      lang="en"
+      className={cn("bg=white text-slate-900 antialias light", inter.className)}
+    >
+      <body className="min-h-screen pt-12 bg-slate-50 antialiased ">
         <Navbar />
-        <div className='container max-wd-7xl mx-auto h-full pt-12 '>{children}</div>
+        <div className="container max-wd-7xl mx-auto h-full pt-12 ">
+          {children}
+        </div>
+
+        <Toaster />
       </body>
     </html>
-  )
+  );
 }
