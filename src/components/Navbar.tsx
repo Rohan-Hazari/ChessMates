@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Icons } from "./Icons";
 import { buttonVariants } from "./ui/Button";
 import { getAuthSession } from "@/lib/auth";
+import UserAccountNav from "./UserAccountNav";
 
 //async server component
 const Navbar = async () => {
@@ -17,11 +18,9 @@ const Navbar = async () => {
         </Link>
 
         {/* signin/signup */}
-
+        {/* even session? works no need for user */}
         {session?.user ? (
-          <Link href="/sign-in" className={buttonVariants()}>
-            Sign out
-          </Link>
+          <UserAccountNav user={session.user} />
         ) : (
           <Link href="/sign-in" className={buttonVariants()}>
             Sign In

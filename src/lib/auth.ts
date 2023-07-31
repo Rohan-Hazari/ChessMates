@@ -78,4 +78,7 @@ export const authOptions : NextAuthOptions = {
 
 }
 
+
+    // as of 30/7/23  getServerSession is still experimental
+
 export const getAuthSession = () => getServerSession(authOptions)

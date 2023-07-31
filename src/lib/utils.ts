@@ -4,8 +4,6 @@ import { formatDistanceToNowStrict } from 'date-fns'
 import locale from 'date-fns/locale/en-US'
 
 export function cn(...inputs: ClassValue[]) {
-  //tailwind merge
-  //mx-2 my-2 -> m-2
   return twMerge(clsx(inputs))
 }
 
