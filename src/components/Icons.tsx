@@ -1,5 +1,5 @@
 import { LucideProps, User } from "lucide-react";
-
+// lucide is just an icon library
 export const Icons = {
   user: User,
   logo: (props: LucideProps) => (

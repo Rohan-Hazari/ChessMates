@@ -8,6 +8,9 @@ import { Icons } from "./Icons";
 
 import { useToast } from "@/hooks/use-toast";
 
+// this will make the component like a div so now we can pass any props to it earlier we could only pass key
+// interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement>{}
+
 const UserAuthForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();

@@ -25,7 +25,10 @@ export const authOptions : NextAuthOptions = {
     callbacks:{
         // https://next-auth.js.org/configuration/callbacks#session-callback
         //when a session is created what should happen =>
+        //checks if a token exists and if it does it adds the user information from the token to the session
+        // token is the JWT that was set in the user's browser when they logged in.
         async session({token,session}){
+            // session is inititally populated by nextAuth.js with default valuex
             if(token){
                 session.user.id = token.id
                 session.user.name = token.name
@@ -36,6 +39,8 @@ export const authOptions : NextAuthOptions = {
 
             return session
         },
+        // controls the content of the JWT 
+        // user : This object typically contains the user's information as received from the identity provider (like Google, Facebook, etc.)
         async jwt({token,user}){
             //find dbUser where email = token.email
             const dbUser = await db.user.findFirst({
@@ -70,6 +75,8 @@ export const authOptions : NextAuthOptions = {
                 picture:dbUser.image,
                 username:dbUser.username,
             }
+            // This data is then available in the session callback 
+            // and on the client-side via getSession or useSession
         },
         redirect(){
             return '/'
@@ -80,5 +87,6 @@ export const authOptions : NextAuthOptions = {
 
 
     // as of 30/7/23  getServerSession is still experimental
-
+// When a user logs in, NextAuth.js creates a session for that user.
+// In the context of NextAuth.js, a "session" represents the state of a user's current interaction with your application.
 export const getAuthSession = () => getServerSession(authOptions)
