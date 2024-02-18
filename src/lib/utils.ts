@@ -25,32 +25,3 @@ const formatDistanceLocale = {
   overXYears: '{{count}}y',
   almostXYears: '{{count}}y',
 }
-
-function formatDistance(token: string, count: number, options?: any): string {
-  options = options || {}
-
-  const result = formatDistanceLocale[
-    token as keyof typeof formatDistanceLocale
-  ].replace('{{count}}', count.toString())
-
-  if (options.addSuffix) {
-    if (options.comparison > 0) {
-      return 'in ' + result
-    } else {
-      if (result === 'just now') return result
-      return result + ' ago'
-    }
-  }
-
-  return result
-}
-
-export function formatTimeToNow(date: Date): string {
-  return formatDistanceToNowStrict(date, {
-    addSuffix: true,
-    locale: {
-      ...locale,
-      formatDistance,
-    },
-  })
-}
