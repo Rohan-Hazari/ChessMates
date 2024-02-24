@@ -66,7 +66,7 @@ const SubscribeToggle: FC<SubscribeToggleProps> = ({
       const payload: SubscribeToCommunityPayload = {
         communityId,
       };
-      const { data } = await axios.post("/api/community/subscribe", payload);
+      const { data } = await axios.post("/api/community/unsubscribe", payload);
       return data as string;
     },
     onError: (err) => {
@@ -95,7 +95,7 @@ const SubscribeToggle: FC<SubscribeToggleProps> = ({
       return toast({
         title: "Unsubscribed",
         description: `You have left the ${communityName} community`,
-        variant: "destructive",
+        variant: "default",
       });
     },
   });
