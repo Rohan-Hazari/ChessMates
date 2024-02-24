@@ -20,7 +20,6 @@ const UserAuthForm = () => {
 
     try {
       const res = await signIn("google");
-      console.log(res);
     } catch (error) {
       toast({
         title: "There was a problem",

@@ -1,6 +1,5 @@
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { INFINITE_SCROLLING_PAGINATION_RESULT } from "@/config";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import SubscribeToggle from "@/components/SubscribeToggle";
@@ -88,7 +87,11 @@ const Layout = async ({
               ) : null}
 
               {community.creatorId !== session?.user.id ? (
-                <SubscribeToggle communityId={community.id} />
+                <SubscribeToggle
+                  communityId={community.id}
+                  communityName={community.name}
+                  isSubscribed={isSubscribed}
+                />
               ) : null}
             </dl>
           </aside>
