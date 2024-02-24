@@ -89,4 +89,5 @@ export const authOptions : NextAuthOptions = {
     // as of 30/7/23  getServerSession is still experimental
 // When a user logs in, NextAuth.js creates a session for that user.
 // In the context of NextAuth.js, a "session" represents the state of a user's current interaction with your application.
+// the following helper function is used to get the session of the user
 export const getAuthSession = () => getServerSession(authOptions)

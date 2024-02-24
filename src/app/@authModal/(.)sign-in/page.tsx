@@ -1,10 +1,7 @@
 import SignIn from "@/components/SignIn";
 import CloseModal from "@/components/ui/CloseModal";
-import { FC } from "react";
 
-interface pageProps {}
-
-const page: FC<pageProps> = ({}) => {
+const page = () => {
   return (
     <div className="fixed inset-0 bg-zinc-900/20 z-10">
       <div className="container flex items-center h-full max-w-lg mx-auto">
@@ -12,6 +9,7 @@ const page: FC<pageProps> = ({}) => {
           <div className="absolute top-4 right-4">
             <CloseModal />
           </div>
+
           <SignIn />
         </div>
       </div>

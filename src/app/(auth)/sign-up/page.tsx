@@ -1,7 +1,6 @@
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import SignIn from "@/components/SignIn";
 import { ChevronLeft } from "lucide-react";
 import SignUp from "@/components/SignUp";
 
