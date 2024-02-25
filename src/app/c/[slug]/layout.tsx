@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import SubscribeToggle from "@/components/SubscribeToggle";
+import { buttonVariants } from "@/components/ui/Button";
+import Link from "next/link";
+import { Pencil } from "lucide-react";
 
 const Layout = async ({
   children,
@@ -53,7 +56,7 @@ const Layout = async ({
   });
 
   return (
-    <div className="sm:container max-w-7xl mx-auto h-full pt-12">
+    <div className="sm:container max-w-7xl mx-auto h-full pt-0">
       <div>
         {/* button to take back */}
 
@@ -62,9 +65,28 @@ const Layout = async ({
 
           {/* sidebar */}
 
-          <aside className="hidden md:block overflow-hidden h-fit rounded-lg border border-gray-200 order-first md:order-last">
-            <div className="px-6 py-4">
-              <p className="font-semibold py-3">About {community.name}</p>
+          <aside className="hidden md:block overflow-hidden bg-white h-fit rounded-lg border border-gray-200 order-first md:order-last">
+            <div className="px-6 pt-4">
+              <div className="font-semibold py-3 flex justify-between items-center">
+                <p>About {community.name}</p>
+                {/* Edit description for creator */}
+                {community.creatorId === session?.user.id ? (
+                  <Link
+                    title="Edit description"
+                    className="hover:bg-gray-300 rounded-md transition-colors "
+                    href={`/c/${slug}/edit-description`}
+                  >
+                    <Pencil className="w-5 h-5 hover:cursor-pointer m-2 " />
+                  </Link>
+                ) : null}
+              </div>
+            </div>
+            <div className="px-6  border-b-2 border-gray-200">
+              <p className="font-light pb-3 text-sm">
+                {!!community.description === false
+                  ? "No description"
+                  : community.description}
+              </p>
             </div>
 
             <dl className="divide-y divide-gray-100 px-6 py-4 text-sm leading-6 bg-white">
@@ -93,6 +115,15 @@ const Layout = async ({
                   isSubscribed={isSubscribed}
                 />
               ) : null}
+              <Link
+                className={buttonVariants({
+                  variant: "outline",
+                  className: "w-full mb-6",
+                })}
+                href={`c/${slug}/submit`}
+              >
+                Create Post
+              </Link>
             </dl>
           </aside>
         </div>

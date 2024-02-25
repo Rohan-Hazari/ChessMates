@@ -1,7 +1,8 @@
 import {z} from 'zod'
 
 export const CommunityValidator = z.object({
-    name:z.string().min(3).max(21),
+    name:z.string().min(3).max(21).regex(/^\S*$/),
+    description: z.string().min(3),
 })
 
 export const CommunitySubscriptionsValidator = z.object({
