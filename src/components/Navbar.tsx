@@ -18,7 +18,7 @@ const Navbar = async () => {
         </Link>
 
         {/* signin/signup */}
-        {/* even session? works no need for user */}
+        {/* even session ? works no need for user */}
         {session?.user ? (
           <UserAccountNav user={session.user} />
         ) : (

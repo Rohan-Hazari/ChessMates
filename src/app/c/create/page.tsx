@@ -110,7 +110,7 @@ const Page = () => {
               <p className="text-sm ">
                 Write a small description about your community.
               </p>
-              <p className="text-xs ">Keep it less than 60 words</p>
+              <p className="text-xs ">Keep it less than 50 words</p>
             </div>
             <textarea
               required={true}

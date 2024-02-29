@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Icons } from "./Icons";
-import UserAuthForm from "./UserAuthForm";
+import RegisterUserAuthForm from "./RegisterUserAuthForm";
 
 const SignUp = () => {
   return (
@@ -13,8 +13,7 @@ const SignUp = () => {
           User Agreement and Privacy Policy
         </p>
 
-        {/* Form */}
-        <UserAuthForm />
+        <RegisterUserAuthForm />
 
         <p className="px-8 text-center text-sm text-zinc-700">
           Already a ChessMater?{" "}

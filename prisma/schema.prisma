@@ -42,6 +42,7 @@ model User {
   id               String         @id @default(cuid())
   name             String?
   email            String?        @unique
+  password         String?
   emailVerified    DateTime?
   createdCommunity Community[]    @relation("Created By")
   subscription     Subscription[]
