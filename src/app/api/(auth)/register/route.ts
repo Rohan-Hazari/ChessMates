@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return new Response("User created", {
+    return new Response(JSON.stringify(newUser), {
       status: 201,
       statusText: "New user created",
     });

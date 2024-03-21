@@ -2,7 +2,9 @@ import { NextAuthOptions, getServerSession } from "next-auth";
 import { db } from "./db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter"; // https://authjs.dev/reference/adapter/prisma
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { nanoid } from "nanoid";
+import { compare } from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
@@ -11,6 +13,7 @@ export const authOptions: NextAuthOptions = {
     // basically how to save this session jwt(default stored in session cooki) or in database
     strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/sign-in",
   },
@@ -19,10 +22,52 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
+    CredentialsProvider({
+      name: "Credentials",
+
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials, req) {
+        // Any object returned will be saved in `user` property of the JWT
+        if (!credentials?.email || !credentials?.password) {
+          // If you return null then an error will be displayed advising the user to check their details.
+          return null;
+        }
+
+        const user = await db.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user) {
+          return null;
+        }
+
+        const passwordMatch = await compare(
+          credentials.password,
+          user.password || ""
+        );
+
+        if (!passwordMatch) return null;
+        if (user && passwordMatch) {
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            picture: user.image,
+            username: user.username,
+          };
+        }
+
+        return null;
+      },
+    }),
   ],
 
   callbacks: {
     // https://next-auth.js.org/configuration/callbacks#session-callback
+    // order: authorize -> jwt -> session
     //when a session is created what should happen =>
     //checks if a token exists and if it does it adds the user information from the token to the session
     // token is the JWT that was set in the user's browser when they logged in.
@@ -73,7 +118,7 @@ export const authOptions: NextAuthOptions = {
         username: dbUser.username,
       };
       // This data is then available in the session callback
-      // and on the client-side via getSession or useSession
+      // and then on client-side via getSession or useSession
     },
     redirect() {
       return "/";

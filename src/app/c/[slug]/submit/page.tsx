@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
-import { FC } from "react";
+import Editor from "@/components/Editor";
 
 interface pageProps {
   params: {
@@ -32,6 +32,7 @@ const page = async ({ params }: pageProps) => {
       </div>
 
       {/* form */}
+      <Editor communityId={community.id} />
 
       <div className="w-full flex justify-end">
         <Button type="submit" className="w-full" form="community-post-form">

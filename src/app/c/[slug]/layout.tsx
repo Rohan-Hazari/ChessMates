@@ -104,7 +104,7 @@ const Layout = async ({
               </div>
               {community.creatorId === session?.user.id ? (
                 <div className="flex justify-between gap-x-4 py-3">
-                  <p className="text-gray-500">You created this community</p>
+                  <p className="text-orange-500">You created this community</p>
                 </div>
               ) : null}
 
