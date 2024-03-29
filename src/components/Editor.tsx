@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { PostCreationRequest, PostValidator } from "@/lib/validators/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type EditorJS from "@editorjs/editorjs";
+import { uploadFiles } from "@/lib/uploadthing";
 
 interface EditorProps {
   communityId: string;
@@ -38,6 +39,7 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
     const ImageTool = (await import("@editorjs/image")).default;
 
     if (!ref.current) {
+      // https://editorjs.io/getting-started/#tools-connection
       const editor = new EditorJS({
         holder: "editor",
         onReady() {
@@ -48,10 +50,29 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
         inlineToolbar: true,
         tools: {
           header: Header,
+          // https://github.com/editor-js/link
           linkTool: {
             class: LinkTool,
             config: {
+              // basically when there is a link in the content this api will fetch the meta data of the link
               endpoint: "/api/link",
+            },
+          },
+          image: {
+            class: ImageTool,
+            config: {
+              uploader: {
+                async uploadByFile(file: File) {
+                  const [res] = await uploadFiles([file], "imageUploader");
+
+                  return {
+                    success: 1,
+                    file: {
+                      url: res.fileUrl,
+                    },
+                  };
+                },
+              },
             },
           },
         },
