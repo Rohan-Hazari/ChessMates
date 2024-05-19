@@ -33,7 +33,7 @@ const page = async ({ params }: PageProps) => {
   });
 
   if (!community) {
-    return notFound();
+    notFound();
   }
 
   return (

@@ -72,7 +72,13 @@ const Page = () => {
 
   return (
     <div className="container flex items-center h-full max-w-3xl mx-auto">
-      <form className="relative bg-white w-full h-fit p-4 rounded-lg space-y-6">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          createCommunity();
+        }}
+        className="relative bg-white w-full h-fit p-4 rounded-lg space-y-6"
+      >
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-semibold">Create a Community</h1>
         </div>
@@ -91,7 +97,7 @@ const Page = () => {
               </p>
             </div>
             <Input
-              pattern="^[^\\s]*$"
+              // pattern="^[^\\s]*$"
               required={true}
               value={input.name}
               onChange={(e) =>
@@ -135,9 +141,7 @@ const Page = () => {
           <Button
             isLoading={isLoading}
             disabled={input.name.length === 0}
-            onClick={() => {
-              createCommunity();
-            }}
+            type="submit"
           >
             Create Community
           </Button>

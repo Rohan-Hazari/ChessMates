@@ -46,7 +46,7 @@ const Layout = async ({
   // !! operator turns any value into boolean based on whether its truth or falsy
   const isSubscribed = !!subscription;
 
-  if (!community) return notFound();
+  if (!community) notFound();
   const memberCount = await db.subscription.count({
     where: {
       community: {
