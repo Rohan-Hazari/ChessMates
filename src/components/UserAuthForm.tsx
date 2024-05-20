@@ -23,8 +23,11 @@ const UserAuthForm = () => {
     setIsLoading(true);
 
     try {
-      const res = await signIn("google");
-      console.log(res);
+      await signIn("google");
+      toast({
+        title: "Signed in succesfully",
+        variant: "success",
+      });
     } catch (error) {
       toast({
         title: "There was a problem",
@@ -49,7 +52,12 @@ const UserAuthForm = () => {
         email: email,
         password: password,
       });
-      console.log(res);
+      console.log("this is credential res", res);
+
+      toast({
+        title: "Signed in succesfully",
+        variant: "success",
+      });
 
       if (res?.error) {
         switch (res.error) {

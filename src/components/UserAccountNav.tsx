@@ -14,12 +14,14 @@ import {
 } from "@/components/ui/DropdownMenu";
 // refer shadcn docs dont waste time on understanding the code
 import { signOut } from "next-auth/react";
+import { useToast } from "@/hooks/use-toast";
 
 interface UserAccountNavProps {
   user: Pick<User, "name" | "email" | "image">;
 }
 
 const UserAccountNav: FC<UserAccountNavProps> = ({ user }) => {
+  const { toast } = useToast();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -33,7 +35,7 @@ const UserAccountNav: FC<UserAccountNavProps> = ({ user }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-white" align="end">
         <div className="flex items-center justify-start gap-2 p-2">
-          <div className="flex flex-col spacy-y-1 leading-none">
+          <div className="flex flex-col spacy-y-1 leading-none ">
             {user.name && <p className="font-medium">{user.name}</p>}
             {user.email && (
               <p className="w-[200px] truncate text-sm text-zinc-700">
@@ -55,10 +57,15 @@ const UserAccountNav: FC<UserAccountNavProps> = ({ user }) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onSelect={(event) => {
+          onSelect={async (event) => {
             //   event.preventDefault();
-            signOut({
-              callbackUrl: "/sign-in",
+            await signOut({
+              // callbackUrl: "/sign-in",
+            });
+
+            toast({
+              title: "Signed out succesfully",
+              variant: "warning",
             });
           }}
           className="cursor-pointer"
