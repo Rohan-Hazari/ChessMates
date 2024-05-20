@@ -9,7 +9,7 @@ import { uploadFiles } from "@/lib/uploadthing";
 import { toast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 interface EditorProps {
@@ -18,7 +18,7 @@ interface EditorProps {
 
 const Editor: FC<EditorProps> = ({ communityId }) => {
   const {
-    // register,
+    register,
     handleSubmit,
     formState: { errors },
   } = useForm<PostCreationRequest>({
@@ -32,6 +32,7 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
 
   const ref = useRef<EditorJS>();
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const _titleRef = useRef<HTMLTextAreaElement>(null);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -115,9 +116,18 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
   useEffect(() => {
     const init = async () => {
       await initializeEditor();
+
+      setTimeout(() => {
+        _titleRef.current?.focus();
+      }, 0);
     };
     if (isMounted) {
       init();
+
+      return () => {
+        ref.current?.destroy();
+        ref.current = undefined;
+      };
     }
   }, [isMounted, initializeEditor]);
 
@@ -173,6 +183,8 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
     return null;
   }
 
+  const { ref: titleRef, ...rest } = register("title");
+
   return (
     <div className="w-full p-4 bg-zinc-50 rounded-lg border-[1px] border-zinc-200">
       <form
@@ -183,6 +195,12 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
       >
         <div className="prose prose-stone dark:prose-invert">
           <TextareaAutosize
+            ref={(e) => {
+              titleRef(e);
+              // @ts-ignore
+              _titleRef.current = e;
+            }}
+            {...rest}
             placeholder="Title"
             className="w-full resize-none appearance-none overflow-hidden bg-transparent text-5xl font-bold focus:outline-none"
           />

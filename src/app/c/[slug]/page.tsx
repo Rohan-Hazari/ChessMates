@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { INFINITE_SCROLLING_PAGINATION_RESULT } from "@/config";
 import { notFound } from "next/navigation";
 import CreatePost from "@/components/CreatePost";
+import PostFeed from "@/components/PostFeed";
 
 interface PageProps {
   params: {
@@ -18,6 +19,10 @@ const page = async ({ params }: PageProps) => {
     where: {
       name: slug,
     },
+    // if u dont use include, community.post will return undefined due to performance reason
+    // include basically fetches data from posts model which in turn fetcheds data from votes,comments,author,community model
+    // computaionally expensive, also known as N+1 problem
+    // prisma handles this by batching these queries
     include: {
       posts: {
         include: {
@@ -26,7 +31,7 @@ const page = async ({ params }: PageProps) => {
           comments: true,
           community: true,
         },
-
+        //  limits how much rows to get
         take: INFINITE_SCROLLING_PAGINATION_RESULT,
       },
     },
@@ -41,6 +46,7 @@ const page = async ({ params }: PageProps) => {
       <h1 className="font-bold text-3xl md:text-4xl h-14">{community.name}</h1>
       <CreatePost session={session} />
       {/* Show posts in user feed */}
+      <PostFeed initialPosts={community.posts} communityName={community.name} />
     </>
   );
 };
