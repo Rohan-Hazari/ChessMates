@@ -12,8 +12,7 @@ export async function GET(req: Request) {
       return new Response("Invalid href", { status: 400 });
     }
 
-    const res = await axios.get(href);
-    // console.log(res.data);
+    const res = await axios.get(href, { timeout: 5000 });
 
     const titleMatch = res.data.match(/<title>(.*?)<\/title>/);
     const title = titleMatch ? titleMatch[1] : "";
@@ -42,5 +41,11 @@ export async function GET(req: Request) {
     );
   } catch (error) {
     console.log(error);
+
+    if (axios.isAxiosError(error) && error.code === "ECONNABORTED") {
+      return new Response("Request timed out", { status: 504 });
+    }
+
+    return new Response("An error occurred", { status: 500 });
   }
 }

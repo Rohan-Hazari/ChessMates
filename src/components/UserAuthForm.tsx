@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/Button";
 import { signIn } from "next-auth/react";
 import { Icons } from "./Icons";
@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "./ui/Input";
 import { z } from "zod";
 import { UserValidator } from "@/lib/validators/user";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // this will make the component like a div so now we can pass any props to it earlier we could only pass key
 // interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement>{}
@@ -18,6 +18,7 @@ const UserAuthForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const loginWithGoogle = async () => {
     setIsLoading(true);
@@ -52,23 +53,23 @@ const UserAuthForm = () => {
         email: email,
         password: password,
       });
-      console.log("this is credential res", res);
+      // console.log("this is credential res", res);
 
-      toast({
-        title: "Signed in succesfully",
-        variant: "success",
-      });
+      // toast({
+      //   title: "Signed in succesfully",
+      //   variant: "success",
+      // });
 
       if (res?.error) {
         switch (res.error) {
           case "CredentialsSignin":
-            return toast({
+            toast({
               title: "Invalid credentials",
               description: "Please check your input and try again",
               variant: "destructive",
             });
           default:
-            return toast({
+            toast({
               title: "Could not sign in",
               description: "Please try again later",
               variant: "destructive",
@@ -76,12 +77,25 @@ const UserAuthForm = () => {
         }
       }
 
+      console.log(searchParams);
+      const error = searchParams.get("error");
+      console.log(error);
+
+      if (error === "CredentialsSignin") {
+        toast({
+          title: "Invalid credentials",
+          description: "Please check your input and try again",
+          variant: "destructive",
+        });
+      }
+      // router.push("/");
+
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
 
       if (error instanceof z.ZodError) {
-        return toast({
+        toast({
           title: "Invalid Input Format",
           description: "Please check your input and try again",
           variant: "destructive",
