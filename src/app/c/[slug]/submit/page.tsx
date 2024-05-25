@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/Button";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Editor from "@/components/Editor";
+import { getAuthSession } from "@/lib/auth";
 
 interface pageProps {
   params: {
@@ -10,6 +11,7 @@ interface pageProps {
 }
 
 const page = async ({ params }: pageProps) => {
+  const session = await getAuthSession();
   const community = await db.community.findFirst({
     where: {
       name: params.slug,
@@ -17,6 +19,22 @@ const page = async ({ params }: pageProps) => {
   });
 
   if (!community) return notFound();
+
+  const subscription = !session?.user
+    ? undefined
+    : await db.subscription.findFirst({
+        where: {
+          community: {
+            name: params.slug,
+          },
+          user: {
+            id: session.user.id,
+          },
+        },
+      });
+
+  // !! operator turns any value into boolean based on whether its truth or falsy
+  const isSubscribed = !!subscription;
 
   return (
     <div className="flex flex-col items-start gap-6">
@@ -35,7 +53,13 @@ const page = async ({ params }: pageProps) => {
       <Editor communityId={community.id} />
 
       <div className="w-full flex justify-end">
-        <Button type="submit" className="w-full" form="community-post-form">
+        {/* check subscription and disable button*/}
+        <Button
+          disabled={!isSubscribed}
+          type="submit"
+          className="w-full"
+          form="community-post-form"
+        >
           Post
         </Button>
       </div>
