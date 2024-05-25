@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { UserValidator } from "@/lib/validators/user";
+import { SignUpUserValidator } from "@/lib/validators/user";
 import { hash } from "bcrypt";
 import { nanoid } from "nanoid";
 import { z } from "zod";
@@ -7,7 +7,7 @@ import { z } from "zod";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, password } = UserValidator.parse(body);
+    const { name, email, password } = SignUpUserValidator.parse(body);
 
     //find if there exists a user with given email
     const userExists = await db.user.findUnique({
@@ -24,6 +24,7 @@ export async function POST(req: Request) {
     // create a new user
     const newUser = await db.user.create({
       data: {
+        name,
         email,
         password: hashedPassword,
         username: nanoid(10),
