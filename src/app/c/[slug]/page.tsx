@@ -20,7 +20,7 @@ const page = async ({ params }: PageProps) => {
       name: slug,
     },
     // if u dont use include, community.post will return undefined due to performance reason
-    // include basically fetches data from posts model which in turn fetcheds data from votes,comments,author,community model
+    // include basically fetches data from posts model which in turn fetches data from votes,comments,author,community model
     // computaionally expensive, also known as N+1 problem
     // prisma handles this by batching these queries
     include: {

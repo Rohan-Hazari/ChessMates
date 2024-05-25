@@ -26,18 +26,18 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
 
       credentials: {
-        email: { label: "Email", type: "text" },
+        name: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
         // Any object returned will be saved in `user` property of the JWT
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.name || !credentials?.password) {
           // If you return null then an error will be displayed advising the user to check their details.
           return null;
         }
 
         const user = await db.user.findUnique({
-          where: { email: credentials.email },
+          where: { name: credentials.name },
         });
 
         if (!user) {

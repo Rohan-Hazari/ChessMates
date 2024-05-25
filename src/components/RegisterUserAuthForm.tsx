@@ -10,12 +10,13 @@ import { Input } from "./ui/Input";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { UserPayload } from "@/lib/validators/user";
+import { z } from "zod";
 
 // this will make the component like a div so now we can pass any props to it earlier we could only pass key
 // interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement>{}
 
 const RegisterUserAuthForm = () => {
-  const [input, setInput] = useState({ email: "", password: "" });
+  const [input, setInput] = useState({ email: "", password: "", name: "" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -40,6 +41,7 @@ const RegisterUserAuthForm = () => {
     mutationFn: async () => {
       setIsLoading(true);
       const payload: UserPayload = {
+        name: input.name,
         email: input.email,
         password: input.password,
       };
@@ -52,23 +54,23 @@ const RegisterUserAuthForm = () => {
       setIsLoading(false);
       if (error instanceof AxiosError) {
         if (error.response?.status === 409) {
-          return toast({
+          toast({
             title: "User already exists",
             description: "User with this email already exists",
             variant: "default",
           });
         }
-
-        if (error.response?.status === 422) {
-          return toast({
-            title: "Invalid request data",
-            description: "Please check your input and try again",
-            variant: "destructive",
-          });
-        }
       }
 
-      return toast({
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Invalid Input",
+          description: "Please check your input has no space and try again",
+          variant: "destructive",
+        });
+      }
+
+      toast({
         title: "Could not sign up",
         description: "Something went wrong, please try again later",
         variant: "destructive",
@@ -77,18 +79,26 @@ const RegisterUserAuthForm = () => {
     onSuccess: (data) => {
       setIsLoading(false);
 
-      router.push("/sign-in");
-      return toast({
+      toast({
         title: "New user created",
         description: "User created successfully",
         variant: "success",
       });
+
+      // router.push("/sign-in");
     },
   });
 
   return (
     <div className="flex flex-col gap-y-6">
       <form className="flex flex-col gap-y-6 ">
+        <Input
+          placeholder="Username"
+          type="text"
+          onChange={(e) => {
+            setInput((prevInput) => ({ ...prevInput, name: e.target.value }));
+          }}
+        />
         <Input
           placeholder="Email"
           type="email"
