@@ -51,8 +51,6 @@ const RegisterUserAuthForm = () => {
       return data as string;
     },
     onError: (error) => {
-      console.log(error);
-
       setIsLoading(false);
       if (error instanceof AxiosError) {
         if (error.response?.status === 409) {
