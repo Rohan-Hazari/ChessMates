@@ -51,6 +51,8 @@ const RegisterUserAuthForm = () => {
       return data as string;
     },
     onError: (error) => {
+      console.log(error);
+
       setIsLoading(false);
       if (error instanceof AxiosError) {
         if (error.response?.status === 409) {
@@ -60,21 +62,27 @@ const RegisterUserAuthForm = () => {
             variant: "default",
           });
         }
-      }
-
-      if (error instanceof z.ZodError) {
+        if (error.response?.status === 422) {
+          toast({
+            title: "Invalid Input",
+            description:
+              "Please check your username has no space and try again",
+            variant: "destructive",
+          });
+        }
+      } else if (error instanceof z.ZodError) {
         toast({
           title: "Invalid Input",
-          description: "Please check your input has no space and try again",
+          description: "Please check your username has no space and try again",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Could not sign up",
+          description: "Something went wrong, please try again later",
           variant: "destructive",
         });
       }
-
-      toast({
-        title: "Could not sign up",
-        description: "Something went wrong, please try again later",
-        variant: "destructive",
-      });
     },
     onSuccess: (data) => {
       setIsLoading(false);
@@ -92,13 +100,19 @@ const RegisterUserAuthForm = () => {
   return (
     <div className="flex flex-col gap-y-6">
       <form className="flex flex-col gap-y-6 ">
-        <Input
-          placeholder="Username"
-          type="text"
-          onChange={(e) => {
-            setInput((prevInput) => ({ ...prevInput, name: e.target.value }));
-          }}
-        />
+        <div className="text-left">
+          <label className="text-red-500 text-xs text-left" htmlFor="username">
+            Spaces are not allowed in username
+          </label>
+          <Input
+            placeholder="Username"
+            type="text"
+            id="username"
+            onChange={(e) => {
+              setInput((prevInput) => ({ ...prevInput, name: e.target.value }));
+            }}
+          />
+        </div>
         <Input
           placeholder="Email"
           type="email"
