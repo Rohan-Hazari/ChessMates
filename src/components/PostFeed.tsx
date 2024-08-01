@@ -65,15 +65,26 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
         const currentVote = post.votes.find(
           (vote) => vote.userId === session?.user.id
         );
-
+        // is current post the last one in posts array
         if (index === posts.length - 1) {
           return (
             <li key={post.id} ref={ref}>
-              <Post post={post} communityName={post.community.name} />
+              <Post
+                commentAmt={post.comments.length}
+                post={post}
+                communityName={post.community.name}
+              />
             </li>
           );
         } else {
-          return <Post post={post} communityName={post.community.name} />;
+          return (
+            <Post
+              commentAmt={post.comments.length}
+              key={post.id}
+              post={post}
+              communityName={post.community.name}
+            />
+          );
         }
       })}
     </ul>

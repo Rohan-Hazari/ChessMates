@@ -72,12 +72,15 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
             config: {
               uploader: {
                 async uploadByFile(file: File) {
-                  const [res] = await uploadFiles([file], "imageUploader");
+                  const [res] = await uploadFiles("imageUploader", {
+                    files: [file],
+                  });
+                  console.log(res);
 
                   return {
                     success: 1,
                     file: {
-                      url: res.fileUrl,
+                      url: res.url,
                     },
                   };
                 },
@@ -148,18 +151,18 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
     onError: () => {
       //later add not subscribed to this community error
 
-      return toast({
+      toast({
         title: "Something went wrong",
         description: "Your post was not published,please try again later",
         variant: "destructive",
       });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       // c/community/submit to c/community
       const newPathname = pathname.split("/").slice(0, -1).join("/");
-      router.push(newPathname);
-      router.refresh();
-      return toast({
+      await router.push(newPathname);
+      await router.refresh();
+      toast({
         title: "Post published",
         variant: "success",
       });

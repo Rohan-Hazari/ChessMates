@@ -10,14 +10,29 @@ export async function POST(req: Request) {
     const { name, email, password } = SignUpUserValidator.parse(body);
 
     //find if there exists a user with given email
-    const userExists = await db.user.findUnique({
+    const userMailExists = await db.user.findUnique({
       where: {
         email: email,
       },
     });
 
-    if (userExists) {
-      return new Response("User already exists", { status: 409 });
+    const userNameExists = await db.user.findUnique({
+      where: {
+        name: name,
+      },
+    });
+    if (userNameExists) {
+      return new Response("User mail already exists", {
+        status: 409,
+        statusText: "nameConflict",
+      });
+    }
+
+    if (userMailExists) {
+      return new Response("User mail already exists", {
+        status: 409,
+        statusText: "emailConflict",
+      });
     }
 
     const hashedPassword = await hash(password, 10);

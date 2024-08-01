@@ -51,12 +51,17 @@ const RegisterUserAuthForm = () => {
       return data as string;
     },
     onError: (error) => {
+      console.log(error);
+
       setIsLoading(false);
       if (error instanceof AxiosError) {
         if (error.response?.status === 409) {
+          const reason =
+            error.response?.statusText === "emailConflict" ? "email" : "name";
+
           toast({
-            title: "User already exists",
-            description: "User with this email already exists",
+            title: `User ${reason} already exists`,
+            description: `User with this ${reason} already exists`,
             variant: "default",
           });
         }
@@ -90,8 +95,9 @@ const RegisterUserAuthForm = () => {
         description: "User created successfully",
         variant: "success",
       });
-
-      // router.push("/sign-in");
+      setTimeout(() => {
+        router.push("/sign-in");
+      }, 1000);
     },
   });
 

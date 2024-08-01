@@ -1,4 +1,5 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
@@ -13,7 +14,7 @@ export const ourFileRouter = {
       // This code runs on your server before upload
       const user = await auth(req);
 
-      if (!user) throw new Error("Unauthorized");
+      if (!user) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
@@ -24,6 +25,7 @@ export const ourFileRouter = {
       console.log("file url", file.url);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      // return file.url;
     }),
 } satisfies FileRouter;
 
