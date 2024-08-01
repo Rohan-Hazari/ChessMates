@@ -159,13 +159,16 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
     },
     onSuccess: async () => {
       // c/community/submit to c/community
+
       const newPathname = pathname.split("/").slice(0, -1).join("/");
       await router.push(newPathname);
-      await router.refresh();
       toast({
         title: "Post published",
         variant: "success",
       });
+      setTimeout(() => {
+        router.refresh();
+      }, 500);
     },
   });
 
