@@ -62,6 +62,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
           return acc;
         }, 0);
 
+        // current vote is whether user has clicked UP or DOWN
         const currentVote = post.votes.find(
           (vote) => vote.userId === session?.user.id
         );
@@ -73,6 +74,8 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
                 commentAmt={post.comments.length}
                 post={post}
                 communityName={post.community.name}
+                votesAmt={votesAmount}
+                currentVote={currentVote}
               />
             </li>
           );
@@ -83,6 +86,8 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
               key={post.id}
               post={post}
               communityName={post.community.name}
+              votesAmt={votesAmount}
+              currentVote={currentVote}
             />
           );
         }
