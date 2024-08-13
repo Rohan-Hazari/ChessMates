@@ -21,7 +21,7 @@ const page = async ({ params }: PageProps) => {
     },
     // if u dont use include, community.post will return undefined due to performance reason
     // include basically fetches data from posts model which in turn fetches data from votes,comments,author,community model
-    // computaionally expensive, also known as N+1 problem
+    // computationally expensive, also known as N+1 problem
     // prisma handles this by batching these queries
     include: {
       posts: {
@@ -30,6 +30,9 @@ const page = async ({ params }: PageProps) => {
           votes: true,
           comments: true,
           community: true,
+        },
+        orderBy: {
+          createdAt: 'desc'
         },
         //  limits how much rows to get
         take: INFINITE_SCROLLING_PAGINATION_RESULT,
