@@ -15,7 +15,6 @@ const CustomFeed = async () => {
             community: true
         }
     })
-    console.log("Followed Communities = ", followedCommunities);
 
 
     const posts = await db.post.findMany({

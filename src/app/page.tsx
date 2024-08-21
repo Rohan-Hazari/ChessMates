@@ -3,10 +3,11 @@ import GeneralFeed from "@/components/GeneralFeed";
 import { buttonVariants } from "@/components/ui/Button";
 import { getAuthSession } from "@/lib/auth";
 import { HomeIcon } from "lucide-react";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 export default async function Home() {
-  const session = await getAuthSession()
+  const session = await getServerSession()
   return (
     <>
       <h1 className="font-bold text-3xl md:text-4xl">Home</h1>
