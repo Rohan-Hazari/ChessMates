@@ -8,7 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "./ui/Input";
 import { z } from "zod";
 import { SignInUserValidator } from "@/lib/validators/user";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 
 // this will make the component like a div so now we can pass any props to it earlier we could only pass key
 // interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement>{}
@@ -19,27 +20,32 @@ const UserAuthForm = () => {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname()
 
-  const loginWithGoogle = async () => {
-    setIsLoading(true);
 
-    try {
+  const { mutate: loginWithGoogle } = useMutation({
+    mutationFn: async () => {
+      setIsLoading(true);
       await signIn("google");
-    } catch (error) {
+    },
+    onError: (error) => {
       toast({
         title: "There was a problem",
         description: "There was an error logging in with Google",
         variant: "destructive",
       });
-    } finally {
+      setIsLoading(false)
+    },
+    onSuccess: () => {
       setIsLoading(false);
-    }
-  };
 
-  const loginWithCredentials = async () => {
-    setIsLoading(true);
+    },
+  })
 
-    try {
+  const { mutate: loginWithCredentials } = useMutation({
+    mutationFn: async () => {
+      setIsLoading(true)
+
       const { name, password } = SignInUserValidator.parse({
         name: input.name,
         password: input.password,
@@ -48,63 +54,57 @@ const UserAuthForm = () => {
       const res = await signIn("credentials", {
         name: name,
         password: password,
+        redirect: false
       });
-      // console.log("this is credential res", res);
 
-      // toast({
-      //   title: "Signed in succesfully",
-      //   variant: "success",
-      // });
+      return res
+    },
+    onError: (error) => {
 
-      if (res?.error) {
-        switch (res.error) {
-          case "CredentialsSignin":
-            toast({
-              title: "Invalid credentials",
-              description: "Please check your input and try again",
-              variant: "destructive",
-            });
-          default:
-            toast({
-              title: "Could not sign in",
-              description: "Please try again later",
-              variant: "destructive",
-            });
-        }
-      }
-
-      console.log(searchParams);
-      const error = searchParams.get("error");
-      console.log(error);
-
-      if (error === "CredentialsSignin") {
-        toast({
-          title: "Username or password is wrong",
-          description: "Please check your input and try again",
-          variant: "destructive",
-        });
-      }
-      // router.push("/");
-
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
 
       if (error instanceof z.ZodError) {
         toast({
           title: "Invalid Input Format",
-          description: "Please check your input and try again",
+          description: "Make sure there are no spaces in input",
+          variant: "destructive",
+        });
+      }
+      else {
+        toast({
+          title: "Could not sign in",
+          description: "Please try again later",
           variant: "destructive",
         });
       }
 
-      return toast({
-        title: "Could not sign in",
-        description: "Please try again later",
-        variant: "destructive",
-      });
+      setIsLoading(false)
+
+    },
+    onSuccess: (data) => {
+
+      const error = searchParams.get('error')
+      console.log(error);
+      switch (error) {
+        case "CredentialsSignin":
+          toast({
+            title: "Invalid credentials",
+            description: "Please check your input and try again",
+            variant: "destructive",
+          });
+        default:
+          toast({
+            title: "Could not sign in",
+            description: "Please try again later",
+            variant: "destructive",
+          });
+
+      }
+
+      setIsLoading(false)
     }
-  };
+  })
+
+
 
   return (
     <div className="flex flex-col gap-y-6">

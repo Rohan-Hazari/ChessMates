@@ -65,6 +65,7 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
+    //  When using the Credentials Provider the user object is the response returned from the authorize callback and the profile object is the raw body of the HTTP POST submission.
     // https://next-auth.js.org/configuration/callbacks#session-callback
     // order: authorize -> jwt -> session
     //when a session is created what should happen =>
