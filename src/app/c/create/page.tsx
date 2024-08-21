@@ -66,7 +66,7 @@ const Page = () => {
         description: `Community named ${data} was created`,
         variant: "success",
       });
-      router.push(`c/${data}`);
+      router.push(`${data}`);
     },
   });
 

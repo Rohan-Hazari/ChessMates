@@ -5,7 +5,7 @@ import { PostVoteValidator } from "@/lib/validators/vote";
 import { CachedPost } from "@/types/redis";
 import { z } from "zod";
 
-const CACHE_AFTER_UPVOTES = 5;
+const CACHE_AFTER_UPVOTES = 1;
 
 export async function PATCH(req: Request) {
   try {
