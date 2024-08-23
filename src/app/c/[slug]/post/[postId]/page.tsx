@@ -46,10 +46,7 @@ const page = async ({ params }: pageProps) => {
         toast({ title: 'Server error', description: 'Something went wrong,please try again later', variant: 'destructive' })
     }
 
-
-
     // if it not cached then call from database
-
     const getData = async () => {
         try {
             return await db.post.findUnique({
