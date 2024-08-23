@@ -53,15 +53,12 @@ const UserAuthForm = () => {
 
       const res = await signIn("credentials", {
         name: name,
-        password: password,
-        redirect: false
+        password: password
       });
 
       return res
     },
     onError: (error) => {
-
-
       if (error instanceof z.ZodError) {
         toast({
           title: "Invalid Input Format",
@@ -82,22 +79,23 @@ const UserAuthForm = () => {
     },
     onSuccess: (data) => {
 
-      const error = searchParams.get('error')
-      console.log(error);
-      switch (error) {
-        case "CredentialsSignin":
-          toast({
-            title: "Invalid credentials",
-            description: "Please check your input and try again",
-            variant: "destructive",
-          });
-        default:
-          toast({
-            title: "Could not sign in",
-            description: "Please try again later",
-            variant: "destructive",
-          });
+      const error = searchParams ? searchParams.get('error') : null
+      if (error) {
+        switch (error) {
+          case "CredentialsSignin":
+            toast({
+              title: "Invalid credentials",
+              description: "Please check your input and try again",
+              variant: "destructive",
+            });
+          default:
+            toast({
+              title: "Could not sign in",
+              description: "Please try again later",
+              variant: "destructive",
+            });
 
+        }
       }
 
       setIsLoading(false)
