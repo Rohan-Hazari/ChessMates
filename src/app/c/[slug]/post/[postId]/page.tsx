@@ -1,3 +1,4 @@
+import CommentsSection from '@/components/CommentsSection'
 import EditorOutput from '@/components/EditorOutput'
 import PostVoteServer from '@/components/post-vote/PostVoteServer'
 import { buttonVariants } from '@/components/ui/Button'
@@ -23,6 +24,8 @@ export const fetchCache = 'force-no-store'
 
 const page = async ({ params }: pageProps) => {
     const cachedPost = (await redis.hgetall(`post:${params.postId}`)) as CachedPost
+    console.log("cahcedPOst", cachedPost);
+
     let post: (Post & { votes: Vote[]; author: User }) | null = null
     // if it not cached then call from database
     if (!cachedPost) {
@@ -71,6 +74,14 @@ const page = async ({ params }: pageProps) => {
                 </h1>
 
                 <EditorOutput content={post?.content ?? cachedPost.content} />
+
+                <Suspense
+                    fallback={
+                        <Loader2 className='h-5 w-5 animate-spin text-zinc-500' />
+                    }>
+                    {/* @ts-expect-error Server Component */}
+                    <CommentsSection postId={post?.id ?? cachedPost.id} />
+                </Suspense>
 
             </div>
         </div>
