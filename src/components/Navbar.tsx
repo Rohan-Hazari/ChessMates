@@ -4,7 +4,6 @@ import { buttonVariants } from "./ui/Button";
 import { getAuthSession } from "@/lib/auth";
 import UserAccountNav from "./UserAccountNav";
 
-//async server component
 const Navbar = async () => {
   const session = await getAuthSession();
   return (
@@ -17,8 +16,6 @@ const Navbar = async () => {
           </p>
         </Link>
 
-        {/* signin/signup */}
-        {/* even session ? works no need for user */}
         {session?.user ? (
           <UserAccountNav user={session.user} />
         ) : (

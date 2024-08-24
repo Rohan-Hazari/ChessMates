@@ -60,7 +60,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
   const posts = data?.pages.flatMap((page) => page) ?? initialPosts;
 
   return (
-    <ul className="flex flex-col col-span-2 space-y-6">
+    <div className="flex flex-col col-span-2 space-y-6">
       {posts.map((post, index) => {
         const votesAmount = post.votes.reduce((acc, vote) => {
           if (vote.type === "UP") return acc + 1;
@@ -75,7 +75,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
         // is current post the last one in posts array
         if (index === posts.length - 1) {
           return (
-            <li key={post.id} ref={ref}>
+            <div key={post.id} ref={ref}>
               <Post
                 commentAmt={post.comments.length}
                 post={post}
@@ -83,7 +83,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
                 votesAmt={votesAmount}
                 currentVote={currentVote}
               />
-            </li>
+            </div>
           );
         } else {
           return (
@@ -98,7 +98,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
           );
         }
       })}
-    </ul>
+    </div>
   );
 };
 

@@ -23,7 +23,7 @@ interface UserAccountNavProps {
 const UserAccountNav: FC<UserAccountNavProps> = ({ user }) => {
   const { toast } = useToast();
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger>
         <UserAvatar
           className="h-8 w-8  "
