@@ -49,7 +49,7 @@ const CreateComment: FC<CreateCommentProps> = ({ postId, replytoId }) => {
         variant: "destructive",
       });
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       router.refresh()
       setInput('')
     }

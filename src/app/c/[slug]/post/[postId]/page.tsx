@@ -28,7 +28,6 @@ const page = async ({ params }: pageProps) => {
     let post: (Post & { votes: Vote[]; author: User }) | null = null
     try {
         cachedPost = (await redis.hgetall(`post:${params.postId}`)) as CachedPost
-        // console.log("cahcedPOst", !!cachedPost);
         if (!cachedPost) {
             post = await db.post.findFirst({
                 where: {
@@ -39,10 +38,9 @@ const page = async ({ params }: pageProps) => {
                     author: true,
                 }
             })
-            // console.log("post", post);
+
         }
     } catch (error) {
-        console.log(error);
         toast({ title: 'Server error', description: 'Something went wrong,please try again later', variant: 'destructive' })
     }
 

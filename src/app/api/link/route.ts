@@ -40,8 +40,6 @@ export async function GET(req: Request) {
       })
     );
   } catch (error) {
-    console.log(error);
-
     if (axios.isAxiosError(error) && error.code === "ECONNABORTED") {
       return new Response("Request timed out", { status: 504 });
     }

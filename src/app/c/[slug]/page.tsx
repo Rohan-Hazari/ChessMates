@@ -1,10 +1,9 @@
-import { FC } from "react";
-import { getAuthSession } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { INFINITE_SCROLLING_PAGINATION_RESULT } from "@/config";
-import { notFound } from "next/navigation";
 import CreatePost from "@/components/CreatePost";
 import PostFeed from "@/components/PostFeed";
+import { INFINITE_SCROLLING_PAGINATION_RESULT } from "@/config";
+import { getAuthSession } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { notFound } from "next/navigation";
 
 interface PageProps {
   params: {

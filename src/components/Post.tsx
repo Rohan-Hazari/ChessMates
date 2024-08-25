@@ -1,5 +1,5 @@
 import { formatTimeToNow } from "@/lib/utils";
-import { Post, User, Vote, VoteType } from "@prisma/client";
+import { Post, User, Vote } from "@prisma/client";
 import { MessageSquare } from "lucide-react";
 import { FC, useRef } from "react";
 import EditorOutput from "./EditorOutput";

@@ -1,14 +1,14 @@
 "use client";
 
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Button, buttonVariants } from "@/components/ui/Button";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCustomToast } from "@/hooks/use-custom-toast";
+import { toast } from "@/hooks/use-toast";
+import { CreateCommunityPayload } from "@/lib/validators/community";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { CreateCommunityPayload } from "@/lib/validators/community";
-import { toast } from "@/hooks/use-toast";
-import { useCustomToast } from "@/hooks/use-custom-toast";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const Page = ({ params: slug }: { params: { slug: string } }) => {
   const communityName = slug.slug;
@@ -58,7 +58,7 @@ const Page = ({ params: slug }: { params: { slug: string } }) => {
         if (
           err.response?.status === 401 &&
           err.response?.statusText ===
-            "You are not the creator of this community"
+          "You are not the creator of this community"
         ) {
           return toast({
             title: "Unauthorized",

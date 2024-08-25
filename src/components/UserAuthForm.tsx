@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Button } from "./ui/Button";
-import { signIn } from "next-auth/react";
-import { Icons } from "./Icons";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "./ui/Input";
-import { z } from "zod";
 import { SignInUserValidator } from "@/lib/validators/user";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { z } from "zod";
+import { Icons } from "./Icons";
+import { Button } from "./ui/Button";
+import { Input } from "./ui/Input";
 
 // this will make the component like a div so now we can pass any props to it earlier we could only pass key
 // interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement>{}
@@ -18,9 +18,7 @@ const UserAuthForm = () => {
   const [input, setInput] = useState({ name: "", password: "" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = usePathname()
 
 
   const { mutate: loginWithGoogle } = useMutation({

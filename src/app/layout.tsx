@@ -1,10 +1,9 @@
+import Navbar from "@/components/Navbar";
+import Providers from "@/components/Providers";
+import Toaster from "@/components/ui/Toaster";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 import { Inter } from "next/font/google";
-import Navbar from "@/components/Navbar";
-import Toaster from "@/components/ui/Toaster";
-import Providers from "@/components/Providers";
-import Sidebar from "@/components/Sidebar";
 
 export const metadata = {
   title: "ChessMates",

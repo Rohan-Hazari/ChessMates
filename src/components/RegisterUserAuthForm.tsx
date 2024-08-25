@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, FormEvent } from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/Button";
 import { signIn } from "next-auth/react";
 import { Icons } from "./Icons";
@@ -51,7 +51,6 @@ const RegisterUserAuthForm = () => {
       return data as string;
     },
     onError: (error) => {
-      console.log(error);
 
       setIsLoading(false);
       if (error instanceof AxiosError) {

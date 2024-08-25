@@ -1,16 +1,15 @@
 "use client";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
-import TextareaAutosize from "react-textarea-autosize";
-import { useForm } from "react-hook-form";
-import { PostCreationRequest, PostValidator } from "@/lib/validators/post";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type EditorJS from "@editorjs/editorjs";
-import { uploadFiles } from "@/lib/uploadthing";
 import { toast } from "@/hooks/use-toast";
+import { uploadFiles } from "@/lib/uploadthing";
+import { PostCreationRequest, PostValidator } from "@/lib/validators/post";
+import type EditorJS from "@editorjs/editorjs";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { redirect, usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import TextareaAutosize from "react-textarea-autosize";
 
 interface EditorProps {
   communityId: string;
@@ -75,7 +74,6 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
                   const [res] = await uploadFiles("imageUploader", {
                     files: [file],
                   });
-                  console.log(res);
 
                   return {
                     success: 1,
