@@ -8,7 +8,7 @@ const wait = (ms: number) => { return new Promise((res) => setTimeout(res, ms)) 
 
 const CustomFeed = async () => {
 
-    await wait(10000)
+    // await wait(10000)
 
     const session = await getAuthSession()
 
