@@ -92,7 +92,7 @@ const Page = ({ params: slug }: { params: { slug: string } }) => {
       <div className="relative bg-white w-full h-fit p-4 rounded-lg space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-semibold">
-            Edit {communityName}'s community description
+            Edit {communityName}&apos;s community description
           </h1>
         </div>
 
