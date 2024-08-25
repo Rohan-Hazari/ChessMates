@@ -106,10 +106,10 @@ const RegisterUserAuthForm = () => {
       <form className="flex flex-col gap-y-6 ">
         <div className="text-left">
           <label className="text-red-500 text-xs text-left" htmlFor="username">
-            Spaces are not allowed in username
+            Spaces are not allowed in name
           </label>
           <Input
-            placeholder="Username"
+            placeholder="Name"
             type="text"
             id="username"
             onChange={(e) => {
