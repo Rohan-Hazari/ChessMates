@@ -67,3 +67,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components{
+  .sidebar-icon{
+    @apply relative flex items-center justify-center h-12 w-8 mt-2 mb-2 mx-auto rounded-3xl hover:rounded-xl transition-all duration-300 ease-linear
+  }
+  .sidebar-tooltip{
+    @apply absolute w-auto p-2  min-w-max left-14 rounded-md shadow-md 
+        text-xs font-bold  transition-all duration-300 ease-out scale-0 origin-left
+
+  }
+}
