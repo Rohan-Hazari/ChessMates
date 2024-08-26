@@ -11,6 +11,7 @@ const CustomFeed = async () => {
     // await wait(10000)
 
     const session = await getAuthSession()
+    let noSubscriptions = false;
 
     const followedCommunities = await db.subscription.findMany({
         where: {
@@ -21,6 +22,9 @@ const CustomFeed = async () => {
         }
     })
 
+    if (followedCommunities.length < 1) {
+        noSubscriptions = true;
+    }
 
     const posts = await db.post.findMany({
         where: {
@@ -43,7 +47,7 @@ const CustomFeed = async () => {
         take: INFINITE_SCROLLING_PAGINATION_RESULT,
     })
 
-    return <PostFeed initialPosts={posts} />
+    return <PostFeed initialPosts={posts} noSubscriptions={noSubscriptions} />
 }
 
 export default CustomFeed

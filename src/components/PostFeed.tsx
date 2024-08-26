@@ -14,9 +14,10 @@ import Post from "./Post";
 interface PostFeedProps {
   initialPosts: ExtendedPost[];
   communityName?: string;
+  noSubscriptions?: boolean;
 }
 
-const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
+const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName, noSubscriptions }) => {
   const lastPostRef = useRef<HTMLElement>(null);
 
   const { ref, entry } = useIntersection({
@@ -34,7 +35,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
     async ({ pageParam = 1 }) => {
       const query =
         `/api/posts?limit=${INFINITE_SCROLLING_PAGINATION_RESULT}&page=${pageParam}` +
-        (!!communityName ? `&communityName=${communityName}` : ``);
+        (!!communityName ? `&communityName=${communityName}` : `&communityName=community`);
 
       const { data } = await axios.get(query);
 
@@ -61,6 +62,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
 
   return (
     <div className="flex flex-col col-span-2 space-y-6">
+      {posts.length === 0 && <p className=" font-semibold text-center">No posts found X_X</p>}
       {posts.map((post, index) => {
         const votesAmount = post.votes.reduce((acc, vote) => {
           if (vote.type === "UP") return acc + 1;
@@ -98,6 +100,7 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName }) => {
           );
         }
       })}
+      {noSubscriptions ? (<p className="text-orange-500 font-semibold text-center" >Explore and subscribe to communities to see more posts </p>) : null}
     </div>
   );
 };
