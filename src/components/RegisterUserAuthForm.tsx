@@ -18,6 +18,7 @@ import { z } from "zod";
 const RegisterUserAuthForm = () => {
   const [input, setInput] = useState({ email: "", password: "", name: "" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -27,7 +28,7 @@ const RegisterUserAuthForm = () => {
     try {
       const res = await signIn("google");
     } catch (error) {
-      toast({
+      return toast({
         title: "There was a problem",
         description: "There was an error logging in with Google",
         variant: "destructive",
@@ -51,6 +52,7 @@ const RegisterUserAuthForm = () => {
       return data as string;
     },
     onError: (error) => {
+      setIsError(true);
 
       setIsLoading(false);
       if (error instanceof AxiosError) {
@@ -58,14 +60,14 @@ const RegisterUserAuthForm = () => {
           const reason =
             error.response?.statusText === "emailConflict" ? "email" : "name";
 
-          toast({
+          return toast({
             title: `User ${reason} already exists`,
             description: `User with this ${reason} already exists`,
             variant: "default",
           });
         }
         if (error.response?.status === 422) {
-          toast({
+          return toast({
             title: "Invalid Input",
             description:
               "Please check your username has no space and try again",
@@ -73,13 +75,13 @@ const RegisterUserAuthForm = () => {
           });
         }
       } else if (error instanceof z.ZodError) {
-        toast({
+        return toast({
           title: "Invalid Input",
           description: "Please check your username has no space and try again",
           variant: "destructive",
         });
       } else {
-        toast({
+        return toast({
           title: "Could not sign up",
           description: "Something went wrong, please try again later",
           variant: "destructive",
@@ -89,14 +91,16 @@ const RegisterUserAuthForm = () => {
     onSuccess: (data) => {
       setIsLoading(false);
 
-      toast({
-        title: "New user created",
-        description: "User created successfully",
-        variant: "success",
-      });
       setTimeout(() => {
         router.push("/sign-in");
-      }, 1000);
+      }, 2000);
+
+      return toast({
+        title: "New user created",
+        description: "Redirecting to sign in page",
+        variant: "success",
+      });
+
     },
   });
 
@@ -104,9 +108,7 @@ const RegisterUserAuthForm = () => {
     <div className="flex flex-col gap-y-6">
       <form className="flex flex-col gap-y-6 ">
         <div className="text-left">
-          <label className="text-red-500 text-xs text-left" htmlFor="username">
-            Spaces are not allowed in name
-          </label>
+
           <Input
             placeholder="Name"
             type="text"
@@ -115,6 +117,9 @@ const RegisterUserAuthForm = () => {
               setInput((prevInput) => ({ ...prevInput, name: e.target.value }));
             }}
           />
+          <label className={`${isError ? 'text-red-500' : 'text-slate-500'} text-xs text-left`} htmlFor="username">
+            Spaces are not allowed in name
+          </label>
         </div>
         <Input
           placeholder="Email"
@@ -124,16 +129,22 @@ const RegisterUserAuthForm = () => {
           }}
         />
 
-        <Input
-          placeholder="Password"
-          type="password"
-          onChange={(e) => {
-            setInput((prevInput) => ({
-              ...prevInput,
-              password: e.target.value,
-            }));
-          }}
-        />
+        <div className="text-left">
+          <Input
+            placeholder="Password"
+            type="password"
+            id='password'
+            onChange={(e) => {
+              setInput((prevInput) => ({
+                ...prevInput,
+                password: e.target.value,
+              }));
+            }}
+          />
+          <label className={`${isError ? 'text-red-500' : 'text-slate-500'} text-xs text-left`} htmlFor="password">
+            Password must be atleast 6 characters and space is not allowed
+          </label>
+        </div>
         <Button
           onClick={() => signupWithCredentials()}
           isLoading={isLoading}

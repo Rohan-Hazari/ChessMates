@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { SignInUserValidator } from "@/lib/validators/user";
 import { useMutation } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
 import { Icons } from "./Icons";
@@ -19,6 +19,7 @@ const UserAuthForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const searchParams = useSearchParams();
+  const router = useRouter()
 
 
   const { mutate: loginWithGoogle } = useMutation({
@@ -27,12 +28,12 @@ const UserAuthForm = () => {
       await signIn("google");
     },
     onError: (error) => {
-      toast({
+      setIsLoading(false)
+      return toast({
         title: "There was a problem",
         description: "There was an error logging in with Google",
         variant: "destructive",
       });
-      setIsLoading(false)
     },
     onSuccess: () => {
       setIsLoading(false);
@@ -51,52 +52,55 @@ const UserAuthForm = () => {
 
       const res = await signIn("credentials", {
         name: name,
-        password: password
+        password: password,
+        redirect: false,
       });
+      // when redirect is false the error params is added in res if its true res is undefined
+      // console.log("one", res?.error);
 
       return res
     },
     onError: (error) => {
+      setIsLoading(false)
       if (error instanceof z.ZodError) {
-        toast({
+        return toast({
           title: "Invalid Input Format",
           description: "Make sure there are no spaces in input",
           variant: "destructive",
         });
       }
       else {
-        toast({
+        return toast({
           title: "Could not sign in",
           description: "Please try again later",
           variant: "destructive",
         });
       }
 
-      setIsLoading(false)
+
 
     },
     onSuccess: (data) => {
+      setIsLoading(false)
 
-      const error = searchParams ? searchParams.get('error') : null
-      if (error) {
-        switch (error) {
-          case "CredentialsSignin":
-            toast({
-              title: "Invalid credentials",
-              description: "Please check your input and try again",
-              variant: "destructive",
-            });
-          default:
-            toast({
-              title: "Could not sign in",
-              description: "Please try again later",
-              variant: "destructive",
-            });
+      if (data?.error === 'CredentialsSignin') {
 
-        }
+        return toast({
+          title: "Invalid credentials",
+          description: "Please check your if your name and password is correct and try again",
+          variant: "destructive",
+        });
+
+      } else {
+        setTimeout(() => {
+          router.push('/')
+        }, 2000)
+        return toast({
+          title: "Sign in succesfull",
+          variant: "success",
+        });
       }
 
-      setIsLoading(false)
     }
   })
 

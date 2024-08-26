@@ -120,8 +120,12 @@ export const authOptions: NextAuthOptions = {
       // This data is then available in the session callback
       // and then on client-side via getSession or useSession
     },
-    redirect() {
-      return "/";
+    redirect({ url, baseUrl }) {
+      // If the url starts with '/', it's a relative url, so we prefix it with the baseUrl
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // If the url starts with http or https, it's an absolute url, so we return it as-is
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
   },
 };
