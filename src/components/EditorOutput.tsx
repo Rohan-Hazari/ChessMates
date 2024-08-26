@@ -41,10 +41,11 @@ function CustomImageRenderer({ data }: any) {
   const src = data.file.url;
 
   return (
-    <div className="relative max-w-lg min-h-[25rem] ">
-      <Image alt="image" className="object-renderer" layout="responsive"
-        objectFit="cover" width={700}
-        height={400} src={src} />
+    <div className="relative flex justify-center items-center max-w-[20rem]  lg:max-w-[25rem]  ">
+      <Image alt="image" className="object-renderer"
+        style={{ objectFit: 'cover' }}
+        width={700} height={400}
+        src={src} />
     </div>
   );
 }
