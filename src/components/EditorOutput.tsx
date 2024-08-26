@@ -41,8 +41,10 @@ function CustomImageRenderer({ data }: any) {
   const src = data.file.url;
 
   return (
-    <div className="relative aspect-square max-w-lg min-h-[25rem]">
-      <Image alt="image" className="object-renderer" fill src={src} />
+    <div className="relative max-w-lg min-h-[25rem] ">
+      <Image alt="image" className="object-renderer" layout="responsive"
+        objectFit="cover" width={700}
+        height={400} src={src} />
     </div>
   );
 }
@@ -50,7 +52,7 @@ function CustomImageRenderer({ data }: any) {
 function CustomCodeRenderer({ data }: any) {
   return (
     <pre className="bg-gray-800 rounded-md p-4">
-      <code className="text-gray-100 text-sm"></code>
+      <code className="text-gray-100 text-sm">{data}</code>
     </pre>
   );
 }
