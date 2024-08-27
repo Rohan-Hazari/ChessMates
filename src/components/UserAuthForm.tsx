@@ -83,15 +83,29 @@ const UserAuthForm = () => {
     onSuccess: (data) => {
       setIsLoading(false)
 
-      if (data?.error === 'CredentialsSignin') {
-
+      if (data?.error === 'InvalidCredentials') {
         return toast({
           title: "Invalid credentials",
           description: "Please check your if your name and password is correct and try again",
           variant: "destructive",
         });
 
-      } else {
+      } else if (data?.error === 'UserNotFound') {
+        return toast({
+          title: "User Not Found",
+          description: "No such user exists",
+          variant: "destructive",
+        });
+
+      } else if (data?.error === 'InvalidPassword') {
+        return toast({
+          title: "Invalid Password",
+          description: "Please check your password and try again",
+          variant: "destructive",
+        });
+      }
+      else {
+        router.refresh()
         setTimeout(() => {
           router.push('/')
         }, 2000)

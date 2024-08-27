@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       },
     });
     if (userNameExists) {
-      return new Response("User mail already exists", {
+      return new Response("User Name already exists", {
         status: 409,
         statusText: "nameConflict",
       });
@@ -42,7 +42,6 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
-        username: nanoid(10),
       },
     });
 

@@ -70,14 +70,14 @@ const RegisterUserAuthForm = () => {
           return toast({
             title: "Invalid Input",
             description:
-              "Please check your username has no space and try again",
+              "Please check your username and password are valid",
             variant: "destructive",
           });
         }
       } else if (error instanceof z.ZodError) {
         return toast({
           title: "Invalid Input",
-          description: "Please check your username has no space and try again",
+          description: "Please check your username and password are valid",
           variant: "destructive",
         });
       } else {

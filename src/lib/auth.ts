@@ -1,21 +1,23 @@
 import { NextAuthOptions, getServerSession } from "next-auth";
-import { db } from "./db";
-import { PrismaAdapter } from "@next-auth/prisma-adapter"; // https://authjs.dev/reference/adapter/prisma
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { compare, hash } from "bcrypt";
 import { nanoid } from "nanoid";
-import { compare } from "bcrypt";
+import { db } from "./db";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
   session: {
-    // https://next-auth.js.org/configuration/options#session
-    // basically how to save this session jwt(default stored in session cooki) or in database
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/sign-in",
+    signIn: "/signin",
+    // signOut: "/auth/signout",
+    // newUser: "/auth/new-user",
   },
   providers: [
     GoogleProvider({
@@ -24,46 +26,43 @@ export const authOptions: NextAuthOptions = {
     }),
     CredentialsProvider({
       name: "Credentials",
-
       credentials: {
         name: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
-        // Any object returned will be saved in `user` property of the JWT
+      async authorize(credentials) {
         if (!credentials?.name || !credentials?.password) {
-          return null;
+          throw new Error("InvalidCredentials");
         }
 
-        const user = await db.user.findUnique({
-          where: { name: credentials.name },
+        const user = await db.user.findFirst({
+          where: {
+            name: credentials.name,
+          },
         });
 
-        if (!user) {
-          return null;
+        if (!user || !user.password) {
+          throw new Error("UserNotFound");
         }
 
-        const passwordMatch = await compare(
+        const isPasswordValid = await compare(
           credentials.password,
-          user.password || ""
+          user.password
         );
 
-        if (!passwordMatch) return null;
-        if (user && passwordMatch) {
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            picture: user.image,
-            username: user.username,
-          };
+        if (!isPasswordValid) {
+          throw new Error("InvalidPassword");
         }
 
-        return null;
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
       },
     }),
   ],
-
   callbacks: {
     //  When using the Credentials Provider the user object is the response returned from the authorize callback and the profile object is the raw body of the HTTP POST submission.
     // https://next-auth.js.org/configuration/callbacks#session-callback
@@ -78,14 +77,13 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name;
         session.user.email = token.email;
         session.user.image = token.picture;
-        session.user.username = token.username;
       }
 
       return session;
     },
     // controls the content of the JWT
     // user : This object typically contains the user's information as received from the identity provider (like Google, Facebook, etc.)
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       //find dbUser where email = token.email
       const dbUser = await db.user.findFirst({
         where: {
@@ -95,19 +93,18 @@ export const authOptions: NextAuthOptions = {
 
       // if there is no user in our db yet
       if (!dbUser) {
-        token.id = user!.id;
+        if (user) {
+          token.id = user.id;
+          // If it's a Google login, remove spaces from the name
+          if (account?.provider === "google") {
+            token.name = user.name?.replace(/\s+/g, "");
+            await db.user.update({
+              where: { id: user.id },
+              data: { name: token.name },
+            });
+          }
+        }
         return token;
-      }
-      // if there is a user in our db but no username
-      if (!dbUser.username) {
-        await db.user.update({
-          where: {
-            id: dbUser.id,
-          },
-          data: {
-            username: nanoid(10),
-          },
-        });
       }
 
       return {
@@ -115,7 +112,6 @@ export const authOptions: NextAuthOptions = {
         name: dbUser.name,
         email: dbUser.email,
         picture: dbUser.image,
-        username: dbUser.username,
       };
       // This data is then available in the session callback
       // and then on client-side via getSession or useSession
@@ -128,10 +124,22 @@ export const authOptions: NextAuthOptions = {
       return baseUrl;
     },
   },
+
+  events: {
+    async signIn({ user, account, profile, isNewUser }) {
+      if (isNewUser && account?.provider === "google") {
+        await db.user.update({
+          where: { id: user.id },
+          data: {
+            name: user.name?.replace(/\s+/g, ""),
+          },
+        });
+      }
+    },
+    async createUser({ user }) {
+      // You can perform additional actions when a new user is created
+    },
+  },
 };
 
-// as of 30/7/23  getServerSession is still experimental
-// When a user logs in, NextAuth.js creates a session for that user.
-// In the context of NextAuth.js, a "session" represents the state of a user's current interaction with your application.
-// the following helper function is used to get the session of the user
 export const getAuthSession = () => getServerSession(authOptions);
