@@ -25,7 +25,7 @@ import { useMutation } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
 
 interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {
-    user: Pick<User, 'id' | 'username'>
+    user: Pick<User, 'id' | 'name'>
 }
 
 type FormData = z.infer<typeof UsernameValidator>
@@ -40,7 +40,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     } = useForm<FormData>({
         resolver: zodResolver(UsernameValidator),
         defaultValues: {
-            name: user?.username || '',
+            name: user?.name || '',
         },
     })
 
@@ -69,7 +69,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
                     })
                 }
             }
-            reset({ name: user?.username || '' })
+            reset({ name: user?.name || '' })
             return toast({
                 title: 'Something went wrong.',
                 description: 'Your username was not updated. Please try again.',
