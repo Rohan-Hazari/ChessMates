@@ -48,8 +48,6 @@ model User {
   subscription     Subscription[]
   votes            Vote[]
 
-  username String? @unique
-
   image       String?
   accounts    Account[]
   sessions    Session[]
