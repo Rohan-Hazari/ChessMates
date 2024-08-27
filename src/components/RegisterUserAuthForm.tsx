@@ -92,7 +92,7 @@ const RegisterUserAuthForm = () => {
       setIsLoading(false);
 
       setTimeout(() => {
-        router.push("/sign-in");
+        router.push("/");
       }, 2000);
 
       return toast({
