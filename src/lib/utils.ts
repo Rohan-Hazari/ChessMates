@@ -2,6 +2,7 @@ import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { formatDistanceToNowStrict } from "date-fns";
 import locale from "date-fns/locale/en-US";
+import { Piece } from "@/types/board";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -54,3 +55,50 @@ export function formatTimeToNow(date: Date): string {
     },
   });
 }
+
+export const convertBoardToFEN = (board: Piece[][]): string => {
+  return board
+    .map((row) => {
+      let emptyCount = 0;
+      return (
+        row
+          .map((square) => {
+            if (square === "") {
+              emptyCount++;
+              return "";
+            } else {
+              const result = emptyCount > 0 ? emptyCount + square : square;
+              emptyCount = 0;
+              return result;
+            }
+          })
+          .join("") + (emptyCount > 0 ? emptyCount : "")
+      );
+    })
+    .join("/");
+};
+
+export const convertFENToBoard = (fen: string): Piece[][] => {
+  if (!fen || typeof fen !== "string") {
+    console.error("Invalid FEN string:", fen);
+    return Array(8).fill(Array(8).fill(""));
+  }
+  const board: Piece[][] = Array(8)
+    .fill(null)
+    .map(() => Array(8).fill(""));
+  const rows = fen.split("/");
+
+  rows.forEach((row, rowIndex) => {
+    let colIndex = 0;
+    row.split("").forEach((char) => {
+      if (char >= "1" && char <= "8") {
+        colIndex += parseInt(char);
+      } else {
+        board[rowIndex][colIndex] = char as Piece;
+        colIndex++;
+      }
+    });
+  });
+
+  return board;
+};
