@@ -95,6 +95,12 @@ model Post {
 
   comments Comment[]
   votes    Vote[]
+
+  postType String @default("regular")
+
+  boardFen      String?
+  boardSolution String?
+  gamePGN       String?
 }
 
 model Comment {

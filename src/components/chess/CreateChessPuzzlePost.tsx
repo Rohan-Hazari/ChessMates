@@ -9,7 +9,12 @@ import { Textarea } from "@/components/ui/TextArea"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card"
 import { convertBoardToFEN, convertFENToBoard } from '@/lib/utils'
 import { Piece, Board, Position, PieceItem } from '@/types/board'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
+import { ChessPostPayload } from '@/lib/validators/chesspost'
+import { useMutation } from '@tanstack/react-query'
+import { z } from 'zod'
+import { toast, useToast } from '@/hooks/use-toast'
+import { useCustomToast } from '@/hooks/use-custom-toast'
 
 const pieceComponents = {
     'K': () => <span className="text-4xl">♔</span>,
@@ -26,12 +31,17 @@ const pieceComponents = {
     'p': () => <span className="text-4xl text-primary">♟</span>,
 }
 
+interface CreateChessPuzzlePostProps {
+    fen: string,
+    isSubscribed: boolean
+    communityId: string
+}
 
 
-const CreateChessPuzzlePost = ({ fen }: { fen: string }) => {
-    const [title, setTitle] = useState('')
-    const [preText, setPreText] = useState('')
-    const [postText, setPostText] = useState('')
+const CreateChessPuzzlePost = ({ fen, isSubscribed, communityId }: CreateChessPuzzlePostProps) => {
+    const [title, setTitle] = useState<string>('')
+    const [description, setDescription] = useState<string>('')
+    const [boardSolution, setBoardSolution] = useState<string>('')
     const givenBoard = convertFENToBoard(fen)
     const [board, setBoard] = useState<Board>(givenBoard ?? [
         ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
@@ -43,6 +53,8 @@ const CreateChessPuzzlePost = ({ fen }: { fen: string }) => {
         ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
         ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
     ])
+
+    const { loginToast } = useCustomToast()
 
     const handleDrop = (item: PieceItem, newPosition: Position) => {
 
@@ -83,13 +95,70 @@ const CreateChessPuzzlePost = ({ fen }: { fen: string }) => {
         }
     }
 
-    const handlePost = async () => {
-        console.log('Posting:', { title, preText, board, postText })
-        const fen = convertBoardToFEN(board);
-        console.log('fen', fen);
-        const payload = {}
+    const { mutate } = useMutation({
+        mutationFn: async () => {
+            const fen = convertBoardToFEN(board);
+            const payload: ChessPostPayload = {
+                title,
+                description,
+                communityId: communityId,
+                boardFen: fen,
+                boardSolution
+            }
 
-        const res = await axios.post('/api/chess/puzzle', payload)
+            const res = await axios.post('/api/chess/puzzle', payload)
+            return res.data
+        },
+        onError: (error) => {
+
+            if (error instanceof z.ZodError) {
+                return toast({
+                    title: 'Invalid input',
+                    description: 'Please check the inputs and try again',
+                    variant: 'warning'
+                })
+            }
+            if (error instanceof AxiosError) {
+                if (error.response?.status === 403) {
+                    if (error.response.statusText === 'loginError') {
+                        return loginToast()
+                    }
+                    else {
+                        return toast({
+                            title: 'Not Subscribed to the community',
+                            description: 'Please join the community to post',
+                            variant: 'warning'
+                        })
+                    }
+                } else if (error.response?.status === 404) {
+                    return toast({
+                        title: 'No such community exist',
+                        description: 'Community not found',
+                        variant: 'destructive'
+                    })
+                }
+
+            } else {
+                return toast({
+                    title: 'Internal server error',
+                    description: 'Something went wrong on our side, please try again later',
+                    variant: 'destructive'
+                })
+            }
+
+
+
+
+
+        },
+        onSuccess: () => {
+
+        }
+    })
+
+    const handlePost = async () => {
+
+
 
         // Here you would typically send this data to your backend
     }
@@ -120,8 +189,8 @@ const CreateChessPuzzlePost = ({ fen }: { fen: string }) => {
                             label="Description"
                             htmlFor='Description'
                             placeholder="Give context to puzzle example white to move or provide hints "
-                            value={preText}
-                            onChange={(e) => setPreText(e.target.value)}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                         />
                     </div>
                     <div className="flex flex-col sm:flex-row items-start justify-center">
@@ -136,12 +205,12 @@ const CreateChessPuzzlePost = ({ fen }: { fen: string }) => {
                         label="Enter Solution"
                         htmlFor='Solution'
                         placeholder="Example: 1.e4 e5 2.Nf3 Nc6 3.Bb5 Qxh7"
-                        value={postText}
-                        onChange={(e) => setPostText(e.target.value)}
+                        value={boardSolution}
+                        onChange={(e) => setBoardSolution(e.target.value)}
                     />
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={handlePost}>Post</Button>
+                    <Button disabled={isSubscribed} onClick={handlePost}>Post</Button>
                 </CardFooter>
             </Card>
         </DndProvider>
@@ -211,7 +280,7 @@ const SidePanel = () => {
     const pieces: Piece[] = ['K', 'Q', 'R', 'B', 'N', 'P', 'k', 'q', 'r', 'b', 'n', 'p']
 
     return (
-        <div className="grid grid-cols-2 gap-2 ml-4">
+        <div className="flex flex-wrap md:grid md:grid-cols-2  gap-2 ml-4">
             {pieces.map((piece, index) => (
                 <div key={index} className="w-12 h-12 bg-secondary rounded-md flex items-center justify-center">
                     <ChessPiece piece={piece} position={null} />
@@ -228,7 +297,7 @@ const DropZone = ({ onDrop }: { onDrop: (item: PieceItem, position: Position) =>
     }))
 
     return (
-        <div ref={drop} className="w-full h-16 bg-secondary mt-4 flex items-center justify-center text-muted-foreground">
+        <div ref={drop} className="w-full h-16 bg-secondary m-4 flex items-center justify-center text-muted-foreground">
             Drop pieces here to remove
         </div>
     )
