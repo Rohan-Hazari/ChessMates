@@ -117,7 +117,6 @@ export const authOptions: NextAuthOptions = {
       // and then on client-side via getSession or useSession
     },
     redirect({ url, baseUrl }) {
-      console.log("Redirect called with:", { url, baseUrl });
       // Handle the Google authentication callback
       if (url.startsWith("/api/auth/callback/google")) {
         return baseUrl;

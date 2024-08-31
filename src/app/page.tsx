@@ -37,12 +37,12 @@ export default async function Home() {
               </p>
             </div>
 
-            <Link
+            {session?.user ? (<Link
               className={buttonVariants({ className: "w-full mt-4 mb-6" })}
               href="/c/create"
             >
               Create Community
-            </Link>
+            </Link>) : (<p className="text-orange-600 font-semibold"> Sign in to see options! </p>)}
           </div>
         </div>
       </div>

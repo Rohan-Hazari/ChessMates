@@ -140,7 +140,7 @@ const Page = () => {
           </Button>
           <Button
             isLoading={isLoading}
-            disabled={input.name.length === 0}
+            disabled={input.name.length === 0 || isLoading}
             type="submit"
           >
             Create Community

@@ -115,7 +115,7 @@ const Layout = async ({
                   isSubscribed={isSubscribed}
                 />
               ) : null}
-              {isSubscribed ? (
+              {isSubscribed || session?.user ? (
                 <Link
                   className={buttonVariants({
                     variant: "outline",

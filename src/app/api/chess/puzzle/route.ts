@@ -49,7 +49,6 @@ export async function POST(req:Request){
         }
     })
     
-    console.log('response',res);
 
     return new Response('Post successfull',{status:200})
     

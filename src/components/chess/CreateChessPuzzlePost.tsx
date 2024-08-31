@@ -157,7 +157,7 @@ const CreateChessPuzzlePost = ({ fen, isSubscribed, communityId }: CreateChessPu
 
     return (
         <DndProvider backend={HTML5Backend}>
-            <Card className="w-full max-w-[400px] mx-auto">
+            <Card className="w-full max-w-4xl mx-auto">
                 <CardHeader>
                     <CardTitle>Chess Post</CardTitle>
                 </CardHeader>
