@@ -1,20 +1,20 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
-import { DndProvider, useDrag, useDrop } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
 import { Button } from "@/components/ui/Button"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Input } from "@/components/ui/Input"
 import { Textarea } from "@/components/ui/TextArea"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card"
-import { convertBoardToFEN, convertFENToBoard } from '@/lib/utils'
-import { Piece, Board, Position, PieceItem } from '@/types/board'
-import axios, { AxiosError } from 'axios'
-import { ChessPostPayload } from '@/lib/validators/chesspost'
-import { useMutation } from '@tanstack/react-query'
-import { z } from 'zod'
-import { toast, useToast } from '@/hooks/use-toast'
 import { useCustomToast } from '@/hooks/use-custom-toast'
+import { toast } from '@/hooks/use-toast'
+import { convertBoardToFEN, convertFENToBoard } from '@/lib/utils'
+import { ChessPostPayload } from '@/lib/validators/chesspost'
+import { Board, Piece, PieceItem, Position } from '@/types/board'
+import { useMutation } from '@tanstack/react-query'
+import axios, { AxiosError } from 'axios'
+import { useState } from 'react'
+import { DndProvider, useDrag, useDrop } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { z } from 'zod'
 
 const pieceComponents = {
     'K': () => <span className="text-4xl">♔</span>,
@@ -95,7 +95,7 @@ const CreateChessPuzzlePost = ({ fen, isSubscribed, communityId }: CreateChessPu
         }
     }
 
-    const { mutate } = useMutation({
+    const { mutate: handlePost, isLoading } = useMutation({
         mutationFn: async () => {
             const fen = convertBoardToFEN(board);
             const payload: ChessPostPayload = {
@@ -145,30 +145,19 @@ const CreateChessPuzzlePost = ({ fen, isSubscribed, communityId }: CreateChessPu
                     variant: 'destructive'
                 })
             }
-
-
-
-
-
         },
         onSuccess: () => {
+            return toast({
+                title: 'Post succesfully',
+                variant: 'success'
+            })
 
         }
     })
 
-    const handlePost = async () => {
-
-
-
-        // Here you would typically send this data to your backend
-    }
-    // useEffect(() => {
-    //     console.log("board", board);
-    // }, [board])
-
     return (
         <DndProvider backend={HTML5Backend}>
-            <Card className="w-full max-w-4xl mx-auto">
+            <Card className="w-full max-w-[400px] mx-auto">
                 <CardHeader>
                     <CardTitle>Chess Post</CardTitle>
                 </CardHeader>
@@ -210,7 +199,7 @@ const CreateChessPuzzlePost = ({ fen, isSubscribed, communityId }: CreateChessPu
                     />
                 </CardContent>
                 <CardFooter>
-                    <Button disabled={isSubscribed} onClick={handlePost}>Post</Button>
+                    <Button disabled={isSubscribed || isLoading} onClick={() => handlePost()}>Post</Button>
                 </CardFooter>
             </Card>
         </DndProvider>

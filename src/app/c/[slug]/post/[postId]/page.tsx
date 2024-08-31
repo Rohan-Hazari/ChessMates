@@ -1,5 +1,6 @@
 import CommentsSection from '@/components/CommentsSection'
 import EditorOutput from '@/components/EditorOutput'
+import ChessPostBoard from '@/components/chess/ChessPostBoard'
 import PostVoteServer from '@/components/post-vote/PostVoteServer'
 import { buttonVariants } from '@/components/ui/Button'
 import { toast } from '@/hooks/use-toast'
@@ -79,7 +80,7 @@ const page = async ({ params }: pageProps) => {
                     {post?.title ?? cachedPost?.title}
                 </h1>
 
-                <EditorOutput content={post?.content ?? cachedPost?.content} />
+                {post?.postType === 'chess' ? (<ChessPostBoard fen={post.boardFen} />) : (<EditorOutput content={post?.content ?? cachedPost?.content} />)}
 
                 <Suspense
                     fallback={
