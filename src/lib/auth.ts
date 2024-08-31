@@ -117,6 +117,14 @@ export const authOptions: NextAuthOptions = {
       // and then on client-side via getSession or useSession
     },
     redirect({ url, baseUrl }) {
+      console.log("Redirect called with:", { url, baseUrl });
+      // Handle the Google authentication callback
+      if (url.startsWith("/api/auth/callback/google")) {
+        return baseUrl;
+      }
+      if (url.includes("/sign-in")) {
+        return baseUrl;
+      }
       // If the url starts with '/', it's a relative url, so we prefix it with the baseUrl
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       // If the url starts with http or https, it's an absolute url, so we return it as-is
