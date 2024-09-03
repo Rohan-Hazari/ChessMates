@@ -36,7 +36,7 @@ const page = async ({ params }: pageProps) => {
 
 
     return <div>
-        <CreateChessPuzzlePost fen='4k2r/6r1/8/8/8/8/3R4/R3K3' isSubscribed={isSubscribed} communityId={community.id} />
+        <CreateChessPuzzlePost fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR' isSubscribed={isSubscribed} communityId={community.id} />
     </div>
 }
 

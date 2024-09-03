@@ -9,6 +9,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 
 interface ChessPostBoardProps {
     fen: string | null
+    boardSolution: string | null
 }
 
 const pieceComponents = {
@@ -26,10 +27,7 @@ const pieceComponents = {
     'p': () => <span className="text-4xl text-primary">♟</span>,
 }
 
-const ChessPostBoard = ({ fen }: ChessPostBoardProps) => {
-    const [title, setTitle] = useState<string>('')
-    const [description, setDescription] = useState<string>('')
-    const [boardSolution, setBoardSolution] = useState<string>('')
+const ChessPostBoard = ({ fen, boardSolution }: ChessPostBoardProps) => {
     const boardFEN = fen ?? ''
     const givenBoard = convertFENToBoard(boardFEN)
     const [board, setBoard] = useState<Board>(givenBoard ?? [
@@ -77,7 +75,7 @@ const ChessPostBoard = ({ fen }: ChessPostBoardProps) => {
     return (
         <div className='flex items-start'>
             <DndProvider backend={HTML5Backend}>
-                <Chessboard board={board} onDrop={handleDrop} givenBoard={givenBoard} setBoard={setBoard} />
+                <Chessboard board={board} onDrop={handleDrop} givenBoard={givenBoard} boardSolution={boardSolution} setBoard={setBoard} />
             </DndProvider>
         </div>
     )
@@ -91,9 +89,10 @@ interface ChessboardProps {
     onDrop: (item: PieceItem, position: Position) => void;
     givenBoard: Board
     setBoard: React.Dispatch<React.SetStateAction<Board>>
+    boardSolution: string | null
 }
 
-const Chessboard = ({ board, onDrop, givenBoard, setBoard }: ChessboardProps) => {
+const Chessboard = ({ board, onDrop, givenBoard, setBoard, boardSolution }: ChessboardProps) => {
     return (
         <div className='flex flex-col gap-2'>
             <div className="inline-grid grid-cols-8 border-2 border-gray-800">
@@ -172,10 +171,10 @@ const Square = ({ position, piece, onDrop }: { position: Position; piece: Piece;
             className={`w-12 h-12 ${isBlack ? 'bg-[#b58863]' : 'bg-[#f0d9b5]'} flex items-center justify-center relative`}
         >
             {fileNotation && (
-                <div className='absolute bottom-0 left-0 text-xs invert text-transparent'>{fileNotation}</div>
+                <div className='absolute bottom-0 left-0 text-xs  text-blue-500'>{fileNotation}</div>
             )}
             {rankNotation && (
-                <div className='absolute top-0 right-0 text-xs invert text-transparent'>{rankNotation}</div>
+                <div className='absolute top-0 right-0 text-xs text-blue-500'>{rankNotation}</div>
             )}
 
             {piece && <ChessPiece piece={piece} position={position} />}

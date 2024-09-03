@@ -62,7 +62,6 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, communityName, noSubscripti
 
   return (
     <div className="flex flex-col col-span-2 space-y-6">
-      {posts.length === 0 && <p className=" font-semibold text-center">No posts found X_X</p>}
       {posts.map((post, index) => {
         const votesAmount = post.votes.reduce((acc, vote) => {
           if (vote.type === "UP") return acc + 1;

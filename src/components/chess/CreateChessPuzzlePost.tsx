@@ -11,9 +11,11 @@ import { ChessPostPayload } from '@/lib/validators/chesspost'
 import { Board, Piece, PieceItem, Position } from '@/types/board'
 import { useMutation } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
+import { redirect, usePathname, useRouter } from "next/navigation"
 import { useState } from 'react'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { TouchBackend } from 'react-dnd-touch-backend'
 import { z } from 'zod'
 
 const pieceComponents = {
@@ -55,9 +57,11 @@ const CreateChessPuzzlePost = ({ fen, isSubscribed, communityId }: CreateChessPu
     ])
 
     const { loginToast } = useCustomToast()
+    const router = useRouter()
+    const pathname = usePathname()
+
 
     const handleDrop = (item: PieceItem, newPosition: Position) => {
-
 
         setBoard(prevBoard => {
             const newBoard = prevBoard.map(row => [...row])
@@ -147,39 +151,45 @@ const CreateChessPuzzlePost = ({ fen, isSubscribed, communityId }: CreateChessPu
             }
         },
         onSuccess: () => {
-            return toast({
+            const newPathname = pathname.split("/").slice(0, -1).join("/");
+            router.push(newPathname);
+            toast({
                 title: 'Post succesfully',
                 variant: 'success'
             })
+
+            setTimeout(() => {
+                router.refresh()
+            }, 500)
+
 
         }
     })
 
     return (
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
             <Card className="w-full max-w-4xl mx-auto">
                 <CardHeader>
                     <CardTitle>Chess Post</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-2">
                     <div className="mt-2">
-                        <label className="font-bold" htmlFor='title'>Title</label>
                         <Input
-                            placeholder="Example: Find checkmate in 3 moves"
+                            placeholder="Title"
                             value={title}
                             id='title'
-
+                            className="text-4xl border-none ring-0 focus:border-none focus-visible:outline-none focus-visible:ring-0 m-0 p-0 placeholder:text-2xl placeholder:font-semibold"
                             onChange={(e) => setTitle(e.target.value)}
                         />
 
                     </div>
                     <div className="mt-2">
                         <Textarea
-                            label="Description"
                             htmlFor='Description'
-                            placeholder="Give context to puzzle example white to move or provide hints "
+                            placeholder="Description... "
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
+                            className="border-none ring-0 focus-visible:ring-0 m-0 p-0"
                         />
                     </div>
                     <div className="flex flex-col sm:flex-row items-start justify-center">
@@ -241,7 +251,7 @@ const Square = ({ position, piece, onDrop }: { position: Position; piece: Piece;
     return (
         <div
             ref={drop}
-            className={`w-16 h-16 ${isBlack ? 'bg-[#b58863]' : 'bg-[#f0d9b5]'} flex items-center justify-center`}
+            className={`w-10 h-10 sm:w-16 sm:h-16 ${isBlack ? 'bg-[#b58863]' : 'bg-[#f0d9b5]'} flex items-center justify-center`}
         >
             {piece && <ChessPiece piece={piece} position={position} />}
         </div>
