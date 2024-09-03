@@ -6,6 +6,7 @@ import SubscribeToggle from "@/components/SubscribeToggle";
 import { buttonVariants } from "@/components/ui/Button";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
+import BackButton from "@/components/CommunityBackButton";
 
 const Layout = async ({
   children,
@@ -33,15 +34,15 @@ const Layout = async ({
   const subscription = !session?.user
     ? undefined
     : await db.subscription.findFirst({
-        where: {
-          community: {
-            name: slug,
-          },
-          user: {
-            id: session.user.id,
-          },
+      where: {
+        community: {
+          name: slug,
         },
-      });
+        user: {
+          id: session.user.id,
+        },
+      },
+    });
 
   // !! operator turns any value into boolean based on whether its truth or falsy
   const isSubscribed = !!subscription;
@@ -59,6 +60,7 @@ const Layout = async ({
     <div className="sm:container max-w-7xl mx-auto h-full pt-0">
       <div>
         {/* button to take back */}
+        <BackButton />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-4 py-6">
           <div className="flex flex-col col-span-2 space-y-6">{children}</div>
