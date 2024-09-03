@@ -80,7 +80,7 @@ const page = async ({ params }: pageProps) => {
                     {post?.title ?? cachedPost?.title}
                 </h1>
 
-                {post?.postType === 'chess' ? (<ChessPostBoard fen={post.boardFen} />) : (<EditorOutput content={post?.content ?? cachedPost?.content} />)}
+                {post?.postType === 'chess' ? (<ChessPostBoard boardSolution={post.boardSolution} fen={post.boardFen} />) : (<EditorOutput content={post?.content ?? cachedPost?.content} />)}
 
                 <Suspense
                     fallback={
