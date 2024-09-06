@@ -23,15 +23,15 @@ const page = async ({ params }: pageProps) => {
   const subscription = !session?.user
     ? undefined
     : await db.subscription.findFirst({
-        where: {
-          community: {
-            name: params.slug,
-          },
-          user: {
-            id: session.user.id,
-          },
+      where: {
+        community: {
+          name: params.slug,
         },
-      });
+        user: {
+          id: session.user.id,
+        },
+      },
+    });
 
   // !! operator turns any value into boolean based on whether its truth or falsy
   const isSubscribed = !!subscription;
@@ -50,11 +50,12 @@ const page = async ({ params }: pageProps) => {
       </div>
 
       {/* form */}
-      <Editor communityId={community.id} />
+      <Editor communityId={community.id} buttonId="postBtnId" />
 
       <div className="w-full flex justify-end">
         {/* check subscription and disable button*/}
         <Button
+          id="postBtnId"
           disabled={!isSubscribed}
           type="submit"
           className="w-full"

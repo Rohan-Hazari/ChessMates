@@ -65,7 +65,6 @@ const CreateChessPuzzlePost = ({ fen, isSubscribed, communityId }: CreateChessPu
 
         setBoard(prevBoard => {
             const newBoard = prevBoard.map(row => [...row])
-            console.log(item);
 
             // Remove the piece from its original position if it was on the board
 

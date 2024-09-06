@@ -48,7 +48,6 @@ const ChessPostBoard = ({ fen, boardSolution }: ChessPostBoardProps) => {
 
         setBoard(prevBoard => {
             const newBoard = prevBoard.map(row => [...row])
-            console.log(item);
 
             // Remove the piece from its original position if it was on the board
 
@@ -171,10 +170,10 @@ const Square = ({ position, piece, onDrop }: { position: Position; piece: Piece;
             className={`w-12 h-12 ${isBlack ? 'bg-[#b58863]' : 'bg-[#f0d9b5]'} flex items-center justify-center relative`}
         >
             {fileNotation && (
-                <div className='absolute bottom-0 left-0 text-xs  text-blue-500'>{fileNotation}</div>
+                <div className={`absolute bottom-0 left-0 text-xs  ${isBlack ? 'text-white' : 'text-black'}`}>{fileNotation}</div>
             )}
             {rankNotation && (
-                <div className='absolute top-0 right-0 text-xs text-blue-500'>{rankNotation}</div>
+                <div className={`absolute top-0 right-0 text-xs ${isBlack ? 'text-white' : 'text-black'}`}>{rankNotation}</div>
             )}
 
             {piece && <ChessPiece piece={piece} position={position} />}

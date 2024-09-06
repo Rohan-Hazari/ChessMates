@@ -121,7 +121,6 @@ export default function ValidChessBoard({ fen }: { fen: string | null }) {
 
         if (selectedPiece) {
             const [selectedRow, selectedCol] = selectedPiece
-            console.log('selected piece');
 
             if (isValidMove(selectedPiece, [row, col])) {
                 const newBoard = board.map(row => [...row])

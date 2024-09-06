@@ -13,9 +13,10 @@ import TextareaAutosize from "react-textarea-autosize";
 
 interface EditorProps {
   communityId: string;
+  buttonId: string
 }
 
-const Editor: FC<EditorProps> = ({ communityId }) => {
+const Editor: FC<EditorProps> = ({ communityId, buttonId }) => {
   const {
     register,
     handleSubmit,
@@ -143,10 +144,10 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
         content,
         communityId,
       };
-      const { data } = await axios.post("/api/community/post/create", payload);
-      return data;
+      const res = await axios.post("/api/community/post/create", payload);
+      return res.data;
     },
-    onError: () => {
+    onError: (error) => {
       //later add not subscribed to this community error
 
       toast({
@@ -180,6 +181,13 @@ const Editor: FC<EditorProps> = ({ communityId }) => {
       content: blocks,
       communityId,
     };
+
+    const button = document.getElementById(buttonId) as HTMLButtonElement
+
+    if (button) {
+      button.disabled = true
+    }
+
     createPost(payload);
   }
 
