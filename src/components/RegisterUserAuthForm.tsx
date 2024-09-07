@@ -58,7 +58,7 @@ const RegisterUserAuthForm = () => {
       if (error instanceof AxiosError) {
         if (error.response?.status === 409) {
           const reason =
-            error.response?.statusText === "emailConflict" ? "email" : "name";
+            error.response?.data.error === "emailConflict" ? "email" : "name";
 
           return toast({
             title: `User ${reason} already exists`,
@@ -93,7 +93,8 @@ const RegisterUserAuthForm = () => {
 
       setTimeout(() => {
         router.push("/");
-      }, 2000);
+        router.refresh()
+      }, 1000);
 
       return toast({
         title: "New user created",

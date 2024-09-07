@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/Button";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
 import BackButton from "@/components/CommunityBackButton";
+import DynamicLink from "@/components/ui/DynamicLink";
 
 const Layout = async ({
   children,
@@ -118,15 +119,15 @@ const Layout = async ({
                 />
               ) : null}
               {isSubscribed || session?.user ? (
-                <Link
+                <DynamicLink
                   className={buttonVariants({
                     variant: "outline",
                     className: "w-full mb-6",
                   })}
-                  href={`${slug}/submit`}
+                  slug={slug}
                 >
                   Create Post
-                </Link>
+                </DynamicLink>
               ) : null}
             </dl>
           </aside>

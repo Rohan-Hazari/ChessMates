@@ -22,16 +22,20 @@ export async function POST(req: Request) {
       },
     });
     if (userNameExists) {
-      return new Response("User Name already exists", {
+      return new Response( JSON.stringify({
+        error:'nameConflict',
+        detail:"User Name already exists"
+      }), {
         status: 409,
-        statusText: "nameConflict",
       });
     }
 
     if (userMailExists) {
-      return new Response("User mail already exists", {
+      return new Response( JSON.stringify({
+        error:'emailConflict',
+        detail:"User email already exists"
+      }), {
         status: 409,
-        statusText: "emailConflict",
       });
     }
 
