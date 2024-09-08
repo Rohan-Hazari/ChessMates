@@ -48,13 +48,15 @@ const PostComment: FC<PostCommentProps> = ({
     const commentRef = useRef<HTMLDivElement>(null)
     const [input, setInput] = useState<string>(`@${comment.author.name} `)
     const router = useRouter()
+    const [isLoading, setLoading] = useState<boolean>(false)
     useOnClickOutside(commentRef, () => {
         setIsReplying(false)
     })
 
-    const { mutate: postComment, isLoading } = useMutation({
+    const { mutate: postComment } = useMutation({
         mutationFn: async ({ postId, text, replytoId }: CommentRequest) => {
             const payload: CommentRequest = { postId, text, replytoId }
+            setLoading(true)
 
             const { data } = await axios.patch(
                 `/api/community/post/comment/`,
@@ -74,6 +76,9 @@ const PostComment: FC<PostCommentProps> = ({
             router.refresh()
             setIsReplying(false)
         },
+        onSettled: () => {
+            setLoading(false)
+        }
     })
 
     return (
@@ -153,6 +158,7 @@ const PostComment: FC<PostCommentProps> = ({
                                 Cancel
                             </Button>
                             <Button
+                                disabled={isLoading}
                                 isLoading={isLoading}
                                 onClick={() => {
                                     if (!input) return

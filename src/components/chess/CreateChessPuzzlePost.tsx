@@ -166,7 +166,7 @@ const CreateChessPuzzlePost = ({ fen, isSubscribed, communityId }: CreateChessPu
     })
 
     return (
-        <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
+        <DndProvider backend={HTML5Backend} options={{ enableMouseEvents: true }}>
             <Card className="w-full max-w-4xl mx-auto">
                 <CardHeader>
                     <CardTitle>Chess Post</CardTitle>
@@ -247,11 +247,31 @@ const Square = ({ position, piece, onDrop }: { position: Position; piece: Piece;
 
     const isBlack = position && (position[0] + position[1]) % 2 === 1
 
+
+    const row = position && position[0]
+    const col = position && position[1]
+    const isLastRow = row === 7
+    const isLastColumn = col === 7
+
+    const fileNotation = isLastRow && col !== null ? String.fromCharCode(97 + col) : ''
+    const rankNotation = isLastColumn && row !== null ? String(row + 1) : ''
+
+    console.log(isLastRow)
+    console.log(isLastColumn);
+    ;
+
+
     return (
         <div
             ref={drop}
-            className={`w-10 h-10 sm:w-16 sm:h-16 ${isBlack ? 'bg-[#b58863]' : 'bg-[#f0d9b5]'} flex items-center justify-center`}
+            className={`w-10 h-10 sm:w-16 sm:h-16 ${isBlack ? 'bg-[#b58863]' : 'bg-[#f0d9b5]'} flex items-center justify-center relative`}
         >
+            {fileNotation && (
+                <div className={`absolute bottom-0 left-0 text-xs  ${isBlack ? 'text-white' : 'text-black'}`}>{fileNotation}</div>
+            )}
+            {rankNotation && (
+                <div className={`absolute top-0 right-0 text-xs ${isBlack ? 'text-white' : 'text-black'}`}>{rankNotation}</div>
+            )}
             {piece && <ChessPiece piece={piece} position={position} />}
         </div>
     )
