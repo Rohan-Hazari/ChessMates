@@ -7,6 +7,7 @@ import axios, { AxiosError } from "axios";
 import { useCustomToast } from "@/hooks/use-custom-toast";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface SubscribeToggleProps {
   communityId: string;
@@ -21,6 +22,7 @@ const SubscribeToggle: FC<SubscribeToggleProps> = ({
 }) => {
   const { loginToast } = useCustomToast();
   const router = useRouter();
+  const { data: session } = useSession();
 
   const { mutate: subscribe, isLoading } = useMutation({
     mutationFn: async () => {
@@ -102,6 +104,7 @@ const SubscribeToggle: FC<SubscribeToggleProps> = ({
 
   return isSubscribed ? (
     <Button
+      disabled={!session}
       onClick={() => unSubscribe()}
       isLoading={isUnsubLoading}
       className="w-full mt-1 mb-4"
@@ -110,6 +113,7 @@ const SubscribeToggle: FC<SubscribeToggleProps> = ({
     </Button>
   ) : (
     <Button
+      disabled={!session}
       isLoading={isLoading}
       onClick={() => subscribe()}
       className="w-full mt-1 mb-4"

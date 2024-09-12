@@ -11,6 +11,8 @@ import axios, { AxiosError } from 'axios'
 import { ArrowBigDown, ArrowBigUp } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
 import { Button } from './ui/Button'
+import { useSession } from 'next-auth/react'
+
 
 interface CommentVotesProps {
     commentId: string,
@@ -28,6 +30,7 @@ const CommentVotes: FC<CommentVotesProps> = ({
     const [votesAmt, setVotesAmt] = useState<number>(initialVotesAmt)
     const [currentVote, setCurrentVote] = useState(initialVote)
     const previousVote = usePrevious(currentVote)
+    const { data: session } = useSession()
 
 
     useEffect(() => {
@@ -42,8 +45,12 @@ const CommentVotes: FC<CommentVotesProps> = ({
                 commentId,
                 voteType
             }
+            if (session) {
+                await axios.patch('/api/community/post/comment/vote', payload)
 
-            await axios.patch('/api/community/post/comment/vote', payload)
+            } else {
+                loginToast()
+            }
         },
         onError: (err, voteType) => {
             if (voteType === 'UP') {
@@ -67,17 +74,23 @@ const CommentVotes: FC<CommentVotesProps> = ({
         },
         // Optimistic updates , before request is resolved do this
         onMutate: (type) => {
-            // if the user is pressing on the same vote button , remove it
-            if (currentVote?.type === type) {
-                setCurrentVote(undefined)
-                if (type === 'UP') setVotesAmt((prev) => prev - 1)
-                else if (type === 'DOWN') setVotesAmt((prev) => prev + 1)
+            if (session) {
+                // if the user is pressing on the same vote button , remove it
+                if (currentVote?.type === type) {
+                    setCurrentVote(undefined)
+                    if (type === 'UP') setVotesAmt((prev) => prev - 1)
+                    else if (type === 'DOWN') setVotesAmt((prev) => prev + 1)
+                }
+                else {
+                    setCurrentVote({ type })
+                    if (type === 'UP') setVotesAmt((prev) => prev + (currentVote ? 2 : 1))
+                    else if (type === 'DOWN') setVotesAmt((prev) => prev - (currentVote ? 2 : 1))
+                }
+
+            } else {
+                return loginToast()
             }
-            else {
-                setCurrentVote({ type })
-                if (type === 'UP') setVotesAmt((prev) => prev + (currentVote ? 2 : 1))
-                else if (type === 'DOWN') setVotesAmt((prev) => prev - (currentVote ? 2 : 1))
-            }
+
 
         }
 

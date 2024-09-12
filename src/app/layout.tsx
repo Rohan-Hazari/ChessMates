@@ -29,7 +29,7 @@ export default function RootLayout({
           {/* @ts-expect-error Async Server Component */}
           <Navbar />
 
-          <div className="container max-w-7xl mx-auto h-full pt-12 ">
+          <div className="px-2 sm:container max-w-7xl mx-auto h-full pt-12 ">
             {children}
           </div>
 

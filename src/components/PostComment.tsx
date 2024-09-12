@@ -16,6 +16,8 @@ import { Label } from './ui/Label'
 import { Textarea } from './ui/TextArea'
 import { useSession } from 'next-auth/react'
 import { toast } from '@/hooks/use-toast'
+import { useCustomToast } from '@/hooks/use-custom-toast'
+
 
 
 
@@ -49,6 +51,7 @@ const PostComment: FC<PostCommentProps> = ({
     const [input, setInput] = useState<string>(`@${comment.author.name} `)
     const router = useRouter()
     const [isLoading, setLoading] = useState<boolean>(false)
+    const { loginToast } = useCustomToast()
     useOnClickOutside(commentRef, () => {
         setIsReplying(false)
     })
@@ -111,7 +114,7 @@ const PostComment: FC<PostCommentProps> = ({
 
                 <Button
                     onClick={() => {
-                        if (!session) return router.push('/sign-in')
+                        if (!session) return loginToast()
                         setIsReplying(true)
                     }}
                     variant='ghost'
