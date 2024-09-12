@@ -256,9 +256,6 @@ const Square = ({ position, piece, onDrop }: { position: Position; piece: Piece;
     const fileNotation = isLastRow && col !== null ? String.fromCharCode(97 + col) : ''
     const rankNotation = isLastColumn && row !== null ? String(8 - row) : ''
 
-    console.log(isLastRow)
-    console.log(isLastColumn);
-    ;
 
 
     return (

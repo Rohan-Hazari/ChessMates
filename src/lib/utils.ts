@@ -80,7 +80,6 @@ export const convertBoardToFEN = (board: Piece[][]): string => {
 
 export const convertFENToBoard = (fen: string): Piece[][] => {
   if (!fen || typeof fen !== "string") {
-    console.error("Invalid FEN string:", fen);
     return Array(8).fill(Array(8).fill(""));
   }
   const board: Piece[][] = Array(8)

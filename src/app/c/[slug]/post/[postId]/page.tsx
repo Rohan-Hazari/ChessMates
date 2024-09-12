@@ -65,7 +65,7 @@ const page = async ({ params }: pageProps) => {
     if (!post && !cachedPost) return notFound()
 
     return <div>
-        <div className='h-full flex flex-col sm:flex-row items-center sm:items-start justify-between'>
+        <div className='h-full flex flex-row items-start justify-between'>
             {/* votes and comments will be dynamically streamed in while the crucial content will be shown immediately */}
             <Suspense fallback={<PostVoteSkeleton />} >
                 {/* @ts-expect-error server component */}
@@ -73,7 +73,7 @@ const page = async ({ params }: pageProps) => {
             </Suspense>
             <div className='sm:w-0 w-full flex-1 bg-white p-4 rounded-sm'>
                 <p className='max-h-40 mt-1 truncate text-xs text-gray-500'>
-                    Posted by u/{post?.author.name ?? cachedPost?.name}
+                    Posted by u/{post?.author.name ?? cachedPost?.name}{' '}
                     {formatTimeToNow(new Date(post?.createdAt ?? cachedPost?.createdAt ?? ''))}
                 </p>
                 <h1 className='text-xl font-semibold py-2 leading-6 text-gray-900'>
