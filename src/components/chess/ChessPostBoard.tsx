@@ -167,7 +167,7 @@ const Square = ({ position, piece, onDrop }: { position: Position; piece: Piece;
     return (
         <div
             ref={drop}
-            className={`w-12 h-12 ${isBlack ? 'bg-[#b58863]' : 'bg-[#f0d9b5]'} flex items-center justify-center relative`}
+            className={`w-8 h-8 sm:w-12 sm:h-12 ${isBlack ? 'bg-[#b58863]' : 'bg-[#f0d9b5]'} flex items-center justify-center relative`}
         >
             {fileNotation && (
                 <div className={`absolute bottom-0 left-0 text-xs  ${isBlack ? 'text-white' : 'text-black'}`}>{fileNotation}</div>
