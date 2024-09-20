@@ -5,11 +5,13 @@ import { SignInUserValidator } from "@/lib/validators/user";
 import { useMutation } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { z } from "zod";
 import { Icons } from "./Icons";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
+import ReCAPTCHA from "react-google-recaptcha";
+import axios from "axios";
 
 // this will make the component like a div so now we can pass any props to it earlier we could only pass key
 // interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement>{}
@@ -17,10 +19,29 @@ import { Input } from "./ui/Input";
 const UserAuthForm = () => {
   const [input, setInput] = useState({ name: "", password: "" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCaptchaVerified, setCaptchaVerified] = useState<boolean>(false);
+  const recaptcha = useRef<ReCAPTCHA | null>(null);
   const { toast } = useToast();
-  const searchParams = useSearchParams();
-  const router = useRouter()
+  const router = useRouter();
 
+  const verifyCaptcha = async () => {
+    const captchaValue = recaptcha.current?.getValue();
+    if (!captchaValue) {
+      return false;
+    }
+    try {
+      setIsLoading(true);
+      const res = await axios.post(
+        "/api/captcha-verify",
+        JSON.stringify({ captchaValue })
+      );
+      return res.status === 200;
+    } catch (error) {
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const { mutate: loginWithGoogle } = useMutation({
     mutationFn: async () => {
@@ -28,7 +49,7 @@ const UserAuthForm = () => {
       await signIn("google");
     },
     onError: (error) => {
-      setIsLoading(false)
+      setIsLoading(false);
       return toast({
         title: "There was a problem",
         description: "There was an error logging in with Google",
@@ -37,13 +58,12 @@ const UserAuthForm = () => {
     },
     onSuccess: () => {
       setIsLoading(false);
-
     },
-  })
+  });
 
   const { mutate: loginWithCredentials } = useMutation({
     mutationFn: async () => {
-      setIsLoading(true)
+      setIsLoading(true);
 
       const { name, password } = SignInUserValidator.parse({
         name: input.name,
@@ -58,67 +78,77 @@ const UserAuthForm = () => {
       // when redirect is false the error params is added in res if its true res is undefined
       // console.log("one", res?.error);
 
-      return res
+      return res;
     },
     onError: (error) => {
-      setIsLoading(false)
+      setIsLoading(false);
       if (error instanceof z.ZodError) {
         return toast({
           title: "Invalid Input Format",
           description: "Make sure there are no spaces in input",
           variant: "destructive",
         });
-      }
-      else {
+      } else {
         return toast({
           title: "Could not sign in",
           description: "Please try again later",
           variant: "destructive",
         });
       }
-
-
-
     },
     onSuccess: (data) => {
-      setIsLoading(false)
+      setIsLoading(false);
 
-      if (data?.error === 'InvalidCredentials') {
+      if (data?.error === "InvalidCredentials") {
         return toast({
           title: "Invalid credentials",
-          description: "Please check your if your name and password is correct and try again",
+          description:
+            "Please check your if your name and password is correct and try again",
           variant: "destructive",
         });
-
-      } else if (data?.error === 'UserNotFound') {
+      } else if (data?.error === "UserNotFound") {
         return toast({
           title: "User Not Found",
           description: "No such user exists",
           variant: "destructive",
         });
-
-      } else if (data?.error === 'InvalidPassword') {
+      } else if (data?.error === "InvalidPassword") {
         return toast({
           title: "Invalid Password",
           description: "Please check your password and try again",
           variant: "destructive",
         });
-      }
-      else {
-        router.refresh()
+      } else {
+        router.refresh();
         setTimeout(() => {
-          router.push('/')
-        }, 2000)
+          router.push("/");
+        }, 2000);
         return toast({
           title: "Sign in succesfull",
+          description: "Redirecting....",
           variant: "success",
         });
       }
+    },
+  });
 
+  const handleCaptchaChange = async (token: string | null) => {
+    if (token) {
+      try {
+        const response = await axios.post("/api/captcha-verify", { token });
+        if (response.status === 200) {
+          setCaptchaVerified(true);
+        }
+      } catch (error) {
+        setCaptchaVerified(false);
+        toast({
+          title: "Internal server Error",
+          description: "CAPTCHA Verification error,Please try again",
+          variant: "destructive",
+        });
+      }
     }
-  })
-
-
+  };
 
   return (
     <div className="flex flex-col gap-y-6">
@@ -141,17 +171,22 @@ const UserAuthForm = () => {
             }));
           }}
         />
+        <ReCAPTCHA
+          ref={recaptcha}
+          onChange={handleCaptchaChange}
+          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
+        />
         <Button
           onClick={(e) => {
             e.preventDefault();
             loginWithCredentials();
           }}
+          disabled={!isCaptchaVerified || isLoading}
           isLoading={isLoading}
           size="sm"
           className="w-full"
         >
-          {isLoading}
-          Sign In
+          {isLoading ? "Signing In..." : "Sign In"}
         </Button>
       </form>
       <div className="relative flex flex-col justify-center">
@@ -166,6 +201,7 @@ const UserAuthForm = () => {
       <div className="flex justify-center">
         <Button
           onClick={() => loginWithGoogle()}
+          disabled={!isCaptchaVerified || isLoading}
           isLoading={isLoading}
           size="sm"
           className="w-full"
