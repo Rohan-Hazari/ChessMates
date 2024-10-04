@@ -24,25 +24,6 @@ const UserAuthForm = () => {
   const { toast } = useToast();
   const router = useRouter();
 
-  const verifyCaptcha = async () => {
-    const captchaValue = recaptcha.current?.getValue();
-    if (!captchaValue) {
-      return false;
-    }
-    try {
-      setIsLoading(true);
-      const res = await axios.post(
-        "/api/captcha-verify",
-        JSON.stringify({ captchaValue })
-      );
-      return res.status === 200;
-    } catch (error) {
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const { mutate: loginWithGoogle } = useMutation({
     mutationFn: async () => {
       setIsLoading(true);
@@ -150,6 +131,10 @@ const UserAuthForm = () => {
     }
   };
 
+  const handleExpiredCaptcha = () => {
+    setCaptchaVerified(false);
+  };
+
   return (
     <div className="flex flex-col gap-y-6">
       <form className="flex flex-col gap-y-6 ">
@@ -175,6 +160,7 @@ const UserAuthForm = () => {
           ref={recaptcha}
           onChange={handleCaptchaChange}
           sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
+          onExpired={handleExpiredCaptcha}
         />
         <Button
           onClick={(e) => {
