@@ -57,7 +57,11 @@ const page = async ({ params }: pageProps) => {
                 }
             })
         } catch (error) {
-            console.log(error);
+             toast({
+               title: "Server error",
+               description: "Something went wrong,please try again later",
+               variant: "destructive",
+             });
 
         }
     }

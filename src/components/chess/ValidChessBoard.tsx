@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Button } from "@/components/ui/Button"
-import { Board, Piece, PieceItem, Position } from '@/types/board'
+import {  Piece } from '@/types/board'
 import { convertFENToBoard } from '@/lib/utils'
 
 type Player = 'white' | 'black'

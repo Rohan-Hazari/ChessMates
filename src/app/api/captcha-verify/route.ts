@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   const SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 
   const body = await req.json();

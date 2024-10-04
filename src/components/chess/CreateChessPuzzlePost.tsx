@@ -11,7 +11,7 @@ import { ChessPostPayload } from '@/lib/validators/chesspost'
 import { Board, Piece, PieceItem, Position } from '@/types/board'
 import { useMutation } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
-import { redirect, usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useState } from 'react'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'

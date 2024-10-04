@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { SignUpUserValidator } from "@/lib/validators/user";
 import { hash } from "bcrypt";
-import { nanoid } from "nanoid";
 import { z } from "zod";
 
 export async function POST(req: Request) {
@@ -22,21 +21,27 @@ export async function POST(req: Request) {
       },
     });
     if (userNameExists) {
-      return new Response( JSON.stringify({
-        error:'nameConflict',
-        detail:"User Name already exists"
-      }), {
-        status: 409,
-      });
+      return new Response(
+        JSON.stringify({
+          error: "nameConflict",
+          detail: "User Name already exists",
+        }),
+        {
+          status: 409,
+        }
+      );
     }
 
     if (userMailExists) {
-      return new Response( JSON.stringify({
-        error:'emailConflict',
-        detail:"User email already exists"
-      }), {
-        status: 409,
-      });
+      return new Response(
+        JSON.stringify({
+          error: "emailConflict",
+          detail: "User email already exists",
+        }),
+        {
+          status: 409,
+        }
+      );
     }
 
     const hashedPassword = await hash(password, 10);

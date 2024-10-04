@@ -1,9 +1,8 @@
 'use client'
 
-import { useCustomToast } from '@/hooks/use-custom-toast'
 import { convertFENToBoard } from '@/lib/utils'
 import { Board, Piece, PieceItem, Position } from '@/types/board'
-import { FC, useState } from 'react'
+import {useState } from 'react'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
@@ -41,7 +40,6 @@ const ChessPostBoard = ({ fen, boardSolution }: ChessPostBoardProps) => {
         ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
     ])
 
-    const { loginToast } = useCustomToast()
 
     const handleDrop = (item: PieceItem, newPosition: Position) => {
 
