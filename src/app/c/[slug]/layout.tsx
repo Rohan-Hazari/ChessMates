@@ -30,20 +30,21 @@ const Layout = async ({
         },
       },
     },
+    take: 10,
   });
 
   const subscription = !session?.user
     ? undefined
     : await db.subscription.findFirst({
-      where: {
-        community: {
-          name: slug,
+        where: {
+          community: {
+            name: slug,
+          },
+          user: {
+            id: session.user.id,
+          },
         },
-        user: {
-          id: session.user.id,
-        },
-      },
-    });
+      });
 
   // !! operator turns any value into boolean based on whether its truth or falsy
   const isSubscribed = !!subscription;
@@ -72,7 +73,7 @@ const Layout = async ({
             <div className="px-6 pt-4">
               <div className="font-semibold py-3 flex justify-between items-center">
                 <p>About {community.name}</p>
-                {/* Edit description for creator */}
+                {/* Edit description for creator  */}
                 {community.creatorId === session?.user.id ? (
                   <Link
                     title="Edit description"

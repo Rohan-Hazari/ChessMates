@@ -23,14 +23,14 @@ const PostFeed: FC<PostFeedProps> = ({
   communityName,
   noSubscriptions,
 }) => {
+  const { data: session, status } = useSession();
   const lastPostRef = useRef<HTMLElement>(null);
 
+  const safeInitialPosts = initialPosts ?? [];
   const { ref, entry } = useIntersection({
     root: lastPostRef.current,
     threshold: 1,
   });
-
-  const { data: session } = useSession();
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery(
@@ -60,7 +60,7 @@ const PostFeed: FC<PostFeedProps> = ({
           // current number of pages + 1
           return pages.length + 1;
         },
-        initialData: { pages: [initialPosts], pageParams: [1] },
+        initialData: { pages: [safeInitialPosts], pageParams: [1] },
       }
     );
 
@@ -70,7 +70,10 @@ const PostFeed: FC<PostFeedProps> = ({
     }
   }, [entry, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const posts = data?.pages.flatMap((page) => page) ?? initialPosts;
+  const posts = data?.pages.flatMap((page) => page) ?? safeInitialPosts;
+  if (status === "loading") return null;
+
+  if (safeInitialPosts.length < 1) return renderNoMorePosts();
 
   return (
     <div className="flex flex-col col-span-2 space-y-6">
@@ -113,22 +116,26 @@ const PostFeed: FC<PostFeedProps> = ({
       })}
       {isFetchingNextPage && (
         <div className="sticky bottom-0 left-1/2 flex justify-center items-center bg-gradient-to-b from-transparent to-white  text-amber-500">
-          <FeedSkeletonLoading />
+          {/* <FeedSkeletonLoading /> */}
         </div>
       )}
-      {!hasNextPage && (
-        <div className="flex flex-col justify-center text-zinc-600">
-          <p className="text-center">No more posts to load :/</p>
-          <p className="text-center text-orange-500 font-semibold">
-            Explore and subscribe to communities to see more posts
-          </p>
-        </div>
-      )}
+      {!hasNextPage && renderNoMorePosts()}
       {noSubscriptions && (
         <p className="text-orange-500 font-semibold text-center">
           Explore and subscribe to communities to see more posts
         </p>
       )}
+    </div>
+  );
+};
+
+const renderNoMorePosts = () => {
+  return (
+    <div className="flex flex-col justify-center text-zinc-600">
+      <p className="text-center">No more posts to load :/</p>
+      <p className="text-center text-orange-500 font-semibold">
+        Explore and subscribe to communities to see more posts
+      </p>
     </div>
   );
 };

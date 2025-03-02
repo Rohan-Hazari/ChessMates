@@ -73,11 +73,12 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.0.4",
     "uploadthing": "^6.13.2",
-    "zod": "^3.21.4"
-  },
-  "devDependencies": {
+    "zod": "^3.21.4",
     "@types/bcrypt": "^5.0.2",
     "@types/editorjs__header": "^2.6.0",
     "@types/lodash.debounce": "^4.0.7"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^15.2.0"
   }
 }

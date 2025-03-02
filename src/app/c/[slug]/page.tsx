@@ -31,7 +31,7 @@ const page = async ({ params }: PageProps) => {
           community: true,
         },
         orderBy: {
-          createdAt: 'desc'
+          createdAt: "desc",
         },
         //  limits how much rows to get
         take: INFINITE_SCROLLING_PAGINATION_RESULT,
@@ -45,7 +45,9 @@ const page = async ({ params }: PageProps) => {
 
   return (
     <>
-      <h1 className="font-bold text-3xl md:text-4xl h-14">c/{community.name}</h1>
+      <h1 className="font-bold text-3xl md:text-4xl h-14">
+        c/{community.name}
+      </h1>
       <CreatePost session={session} />
       {/* Show posts in user feed */}
       <PostFeed initialPosts={community.posts} communityName={community.name} />

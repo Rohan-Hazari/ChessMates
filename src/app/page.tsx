@@ -7,20 +7,19 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
-
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 export default async function Home() {
-  const session = await getServerSession()
+  const session = await getServerSession();
   return (
     <>
       <h1 className="font-bold text-3xl md:text-4xl">Home</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-4 py-6">
-        <Suspense fallback={<FeedSkeletonLoading />}>
-          {/* @ts-expect-error server component */}
-          {session ? <CustomFeed /> : <GeneralFeed />}
-        </Suspense>
+        {/* <Suspense fallback={<FeedSkeletonLoading />}> */}
+        {/* @ts-expect-error server component */}
+        {session ? <CustomFeed /> : <GeneralFeed />}
+        {/* </Suspense> */}
         {/* community info */}
         <div className=" col-span-1 overflow-hidden h-fit rounded-lg border border-gray-200 order-first md:order-last">
           <div className="bg-orange-100 px-6 py-4">
@@ -37,12 +36,18 @@ export default async function Home() {
               </p>
             </div>
 
-            {session?.user ? (<Link
-              className={buttonVariants({ className: "w-full mt-4 mb-6" })}
-              href="/c/create"
-            >
-              Create Community
-            </Link>) : (<p className="text-orange-600 font-semibold"> Sign in to see options! </p>)}
+            {session?.user ? (
+              <Link
+                className={buttonVariants({ className: "w-full mt-4 mb-6" })}
+                href="/c/create"
+              >
+                Create Community
+              </Link>
+            ) : (
+              <p className="text-orange-600 font-semibold">
+                Sign in to see options!
+              </p>
+            )}
           </div>
         </div>
       </div>
