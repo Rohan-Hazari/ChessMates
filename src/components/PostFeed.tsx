@@ -73,7 +73,7 @@ const PostFeed: FC<PostFeedProps> = ({
   const posts = data?.pages.flatMap((page) => page) ?? safeInitialPosts;
   if (status === "loading") return null;
 
-  if (safeInitialPosts.length < 1) return renderNoMorePosts();
+  // if (safeInitialPosts.length < 1) return renderNoMorePosts();
 
   return (
     <div className="flex flex-col col-span-2 space-y-6">
