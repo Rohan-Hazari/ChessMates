@@ -17,7 +17,6 @@ interface EditorTools {
   Embed: any;
   List: any;
   Table: any;
-  Code: any;
   LinkTool: any;
   ImageTool: any;
   InlineCode: any;
@@ -35,7 +34,6 @@ const loadEditorTools = async (): Promise<EditorTools> => {
     Embed,
     List,
     Table,
-    Code,
     LinkTool,
     InlineCode,
     ImageTool,
@@ -45,7 +43,6 @@ const loadEditorTools = async (): Promise<EditorTools> => {
     import("@editorjs/embed").then((m) => m.default),
     import("@editorjs/list").then((m) => m.default),
     import("@editorjs/table").then((m) => m.default),
-    import("@editorjs/code").then((m) => m.default),
     import("@editorjs/link").then((m) => m.default),
     import("@editorjs/inline-code").then((m) => m.default),
     import("@editorjs/image").then((m) => m.default),
@@ -57,7 +54,6 @@ const loadEditorTools = async (): Promise<EditorTools> => {
     Embed,
     List,
     Table,
-    Code,
     LinkTool,
     ImageTool,
     InlineCode,
@@ -129,7 +125,6 @@ const EditorMain = ({ communityId, buttonId }: EditorMainProps) => {
             },
           },
           list: editorTools.List,
-          code: editorTools.Code,
           inlineCode: editorTools.InlineCode,
           table: editorTools.Table,
           embed: editorTools.Embed,

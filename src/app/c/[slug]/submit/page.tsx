@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/Button";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Editor from "@/components/Editor";
-import { getAuthSession } from "@/lib/auth";
+// import { getAuthSession } from "@/lib/auth";
+import { getSessionFromRequest } from "@/lib/session";
 
 interface pageProps {
   params: {
@@ -11,7 +12,7 @@ interface pageProps {
 }
 
 const page = async ({ params }: pageProps) => {
-  const session = await getAuthSession();
+  const session = await getSessionFromRequest()
   const community = await db.community.findFirst({
     where: {
       name: params.slug,

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Pencil } from "lucide-react";
 import BackButton from "@/components/CommunityBackButton";
 import DynamicLink from "@/components/ui/DynamicLink";
+import { getSessionFromRequest } from "@/lib/session";
 
 const Layout = async ({
   children,
@@ -16,7 +17,7 @@ const Layout = async ({
   children: React.ReactNode;
   params: { slug: string };
 }) => {
-  const session = await getAuthSession();
+  const session = await getSessionFromRequest()
 
   const community = await db.community.findFirst({
     where: {
@@ -36,15 +37,15 @@ const Layout = async ({
   const subscription = !session?.user
     ? undefined
     : await db.subscription.findFirst({
-        where: {
-          community: {
-            name: slug,
-          },
-          user: {
-            id: session.user.id,
-          },
+      where: {
+        community: {
+          name: slug,
         },
-      });
+        user: {
+          id: session.user.id,
+        },
+      },
+    });
 
   // !! operator turns any value into boolean based on whether its truth or falsy
   const isSubscribed = !!subscription;

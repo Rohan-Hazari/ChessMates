@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { FC } from "react";
@@ -16,7 +16,6 @@ interface EditorOutputProps {
 
 const renderers = {
   image: CustomImageRenderer,
-  code: CustomCodeRenderer,
 };
 
 const style = {
@@ -42,19 +41,15 @@ function CustomImageRenderer({ data }: any) {
 
   return (
     <div className="relative flex justify-center items-center max-w-[20rem]  lg:max-w-[25rem]  ">
-      <Image alt="image" className="object-renderer"
-        style={{ objectFit: 'cover' }}
-        width={700} height={400}
-        src={src} />
+      <Image
+        alt="image"
+        className="object-renderer"
+        style={{ objectFit: "cover" }}
+        width={700}
+        height={400}
+        src={src}
+      />
     </div>
-  );
-}
-
-function CustomCodeRenderer({ data }: any) {
-  return (
-    <pre className="bg-gray-800 rounded-md p-4">
-      <code className="text-gray-100 text-sm">{data}</code>
-    </pre>
   );
 }
 

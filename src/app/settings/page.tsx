@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 
 import { UserNameForm } from '@/components/UsernameForm'
-import { authOptions, getAuthSession } from '@/lib/auth'
+import { authOptions } from '@/lib/auth'
+import { getSessionFromRequest } from '@/lib/session'
 
 export const metadata = {
     title: 'Settings',
@@ -9,7 +10,7 @@ export const metadata = {
 }
 
 export default async function SettingsPage() {
-    const session = await getAuthSession()
+    const session = await getSessionFromRequest()
 
     if (!session?.user) {
         redirect(authOptions?.pages?.signIn || '/login')

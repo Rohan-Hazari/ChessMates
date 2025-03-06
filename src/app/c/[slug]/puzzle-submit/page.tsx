@@ -1,7 +1,8 @@
 
 import CreateChessPuzzlePost from '@/components/chess/CreateChessPuzzlePost'
-import { getAuthSession } from '@/lib/auth';
+// import { getAuthSession } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { getSessionFromRequest } from '@/lib/session';
 import { notFound } from 'next/navigation';
 
 interface pageProps {
@@ -12,7 +13,7 @@ interface pageProps {
 
 const page = async ({ params }: pageProps) => {
 
-    const session = await getAuthSession()
+    const session = await getSessionFromRequest()
     const community = await db.community.findUnique({
         where: {
             name: params.slug
