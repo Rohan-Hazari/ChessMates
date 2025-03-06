@@ -28,8 +28,8 @@ const page = async ({ params }: pageProps) => {
     let cachedPost;
     let post: (Post & { votes: Vote[]; author: User }) | null = null
     try {
-        cachedPost = (await redis.hgetall(`post:${params.postId}`)) as CachedPost
-        if (!cachedPost) {
+        // cachedPost = (await redis.hgetall(`post:${params.postId}`)) as CachedPost
+        // if (!cachedPost) {
             post = await db.post.findFirst({
                 where: {
                     id: params.postId,
@@ -39,8 +39,7 @@ const page = async ({ params }: pageProps) => {
                     author: true,
                 }
             })
-
-        }
+        // }
     } catch (error) {
         toast({ title: 'Server error', description: 'Something went wrong,please try again later', variant: 'destructive' })
     }
@@ -77,14 +76,14 @@ const page = async ({ params }: pageProps) => {
             </Suspense>
             <div className='sm:w-0 w-full flex-1 bg-white p-4 rounded-sm'>
                 <p className='max-h-40 mt-1 truncate text-xs text-gray-500'>
-                    Posted by u/{post?.author.name ?? cachedPost?.name}{' '}
-                    {formatTimeToNow(new Date(post?.createdAt ?? cachedPost?.createdAt ?? ''))}
+                    Posted by u/{post?.author.name ?? ' '}{' '}
+                    {formatTimeToNow(new Date(post?.createdAt ??  ''))}
                 </p>
                 <h1 className='text-xl font-semibold py-2 leading-6 text-gray-900'>
-                    {post?.title ?? cachedPost?.title}
+                    {post?.title ?? ''}
                 </h1>
 
-                {post?.postType === 'chess' ? (<ChessPostBoard boardSolution={post.boardSolution} fen={post.boardFen} />) : (<EditorOutput content={post?.content ?? cachedPost?.content} />)}
+                {post?.postType === 'chess' ? (<ChessPostBoard boardSolution={post.boardSolution} fen={post.boardFen} />) : (<EditorOutput content={post?.content ?? ''} />)}
 
                 <Suspense
                     fallback={
