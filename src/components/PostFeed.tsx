@@ -8,8 +8,6 @@ import { INFINITE_SCROLLING_PAGINATION_RESULT } from "@/config";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import Post from "./Post";
-import { FeedSkeletonLoading } from "./SkeletonLoaders/Feed";
-
 // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 
 interface PostFeedProps {

@@ -6,7 +6,6 @@ import { FC, useRef, useState } from "react";
 import EditorOutput from "./EditorOutput";
 import PostVoteClient from "./post-vote/PostVoteClient";
 import ChessPostBoard from "./chess/ChessPostBoard";
-import ValidChessBoard from "./chess/ValidChessBoard";
 import { Button } from "./ui/Button";
 
 type PartialVote = Pick<Vote, "type">;
