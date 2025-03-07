@@ -16,7 +16,6 @@ interface EditorTools {
   Header: any;
   Embed: any;
   List: any;
-  Table: any;
   LinkTool: any;
   ImageTool: any;
   InlineCode: any;
@@ -28,32 +27,22 @@ interface EditorMainProps {
 }
 
 const loadEditorTools = async (): Promise<EditorTools> => {
-  const [
-    EditorJS,
-    Header,
-    Embed,
-    List,
-    Table,
-    LinkTool,
-    InlineCode,
-    ImageTool,
-  ] = await Promise.all([
-    import("@editorjs/editorjs").then((m) => m.default),
-    import("@editorjs/header").then((m) => m.default),
-    import("@editorjs/embed").then((m) => m.default),
-    import("@editorjs/list").then((m) => m.default),
-    import("@editorjs/table").then((m) => m.default),
-    import("@editorjs/link").then((m) => m.default),
-    import("@editorjs/inline-code").then((m) => m.default),
-    import("@editorjs/image").then((m) => m.default),
-  ]);
+  const [EditorJS, Header, Embed, List, LinkTool, InlineCode, ImageTool] =
+    await Promise.all([
+      import("@editorjs/editorjs").then((m) => m.default),
+      import("@editorjs/header").then((m) => m.default),
+      import("@editorjs/embed").then((m) => m.default),
+      import("@editorjs/list").then((m) => m.default),
+      import("@editorjs/link").then((m) => m.default),
+      import("@editorjs/inline-code").then((m) => m.default),
+      import("@editorjs/image").then((m) => m.default),
+    ]);
 
   return {
     EditorJS,
     Header,
     Embed,
     List,
-    Table,
     LinkTool,
     ImageTool,
     InlineCode,
@@ -126,7 +115,6 @@ const EditorMain = ({ communityId, buttonId }: EditorMainProps) => {
           },
           list: editorTools.List,
           inlineCode: editorTools.InlineCode,
-          table: editorTools.Table,
           embed: editorTools.Embed,
         },
       });

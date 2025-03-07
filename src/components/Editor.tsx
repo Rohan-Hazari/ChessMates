@@ -1,8 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import { FC } from "react";
-import { toast } from "@/hooks/use-toast";
-import EditorErrorBoundary from "@/components/EditorErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const EditorMain = dynamic(() => import("./EditorMain"), {
   loading: () => (
@@ -17,12 +16,17 @@ interface EditorProps {
   communityId: string;
   buttonId: string;
 }
+const renderEditorError = (
+  <div className="editor-error">
+    <h3>Sorry, there was a problem loading the editor.</h3>
+  </div>
+);
 
 const Editor: FC<EditorProps> = ({ communityId, buttonId }) => {
   return (
-    <EditorErrorBoundary>
+    <ErrorBoundary fallback={renderEditorError}>
       <EditorMain communityId={communityId} buttonId={buttonId} />
-    </EditorErrorBoundary>
+    </ErrorBoundary>
   );
 };
 
