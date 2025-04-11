@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { SignInUserValidator } from "@/lib/validators/user";
 import { useMutation } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { z } from "zod";
 import { Icons } from "./Icons";

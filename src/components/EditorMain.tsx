@@ -164,7 +164,7 @@ const EditorMain = ({ communityId, buttonId }: EditorMainProps) => {
 
   useEffect(() => {
     if (Object.keys(errors).length) {
-      for (const [_key, value] of Object.entries(errors)) {
+      for (const [_, value] of Object.entries(errors)) {
         toast({
           title: "Something went wrong",
           description: (value as { message: string }).message,

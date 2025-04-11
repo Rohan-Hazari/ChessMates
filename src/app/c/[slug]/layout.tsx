@@ -1,4 +1,3 @@
-import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";

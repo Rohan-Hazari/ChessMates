@@ -26,7 +26,7 @@ const RegisterUserAuthForm = () => {
     setIsLoading(true);
 
     try {
-      const res = await signIn("google");
+      await signIn("google");
     } catch (error) {
       return toast({
         title: "There was a problem",
@@ -69,8 +69,7 @@ const RegisterUserAuthForm = () => {
         if (error.response?.status === 422) {
           return toast({
             title: "Invalid Input",
-            description:
-              "Please check your username and password are valid",
+            description: "Please check your username and password are valid",
             variant: "destructive",
           });
         }
@@ -93,7 +92,7 @@ const RegisterUserAuthForm = () => {
 
       setTimeout(() => {
         router.push("/");
-        router.refresh()
+        router.refresh();
       }, 1000);
 
       return toast({
@@ -101,7 +100,6 @@ const RegisterUserAuthForm = () => {
         description: "Redirecting to sign in page",
         variant: "success",
       });
-
     },
   });
 
@@ -109,7 +107,6 @@ const RegisterUserAuthForm = () => {
     <div className="flex flex-col gap-y-6">
       <form className="flex flex-col gap-y-6 ">
         <div className="text-left">
-
           <Input
             placeholder="Name"
             type="text"
@@ -118,7 +115,12 @@ const RegisterUserAuthForm = () => {
               setInput((prevInput) => ({ ...prevInput, name: e.target.value }));
             }}
           />
-          <label className={`${isError ? 'text-red-500' : 'text-slate-500'} text-xs text-left`} htmlFor="username">
+          <label
+            className={`${
+              isError ? "text-red-500" : "text-slate-500"
+            } text-xs text-left`}
+            htmlFor="username"
+          >
             Spaces are not allowed in name
           </label>
         </div>
@@ -134,7 +136,7 @@ const RegisterUserAuthForm = () => {
           <Input
             placeholder="Password"
             type="password"
-            id='password'
+            id="password"
             onChange={(e) => {
               setInput((prevInput) => ({
                 ...prevInput,
@@ -142,7 +144,12 @@ const RegisterUserAuthForm = () => {
               }));
             }}
           />
-          <label className={`${isError ? 'text-red-500' : 'text-slate-500'} text-xs text-left`} htmlFor="password">
+          <label
+            className={`${
+              isError ? "text-red-500" : "text-slate-500"
+            } text-xs text-left`}
+            htmlFor="password"
+          >
             Password must be atleast 6 characters and space is not allowed
           </label>
         </div>
