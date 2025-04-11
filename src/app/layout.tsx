@@ -1,10 +1,12 @@
 import Navbar from "@/components/Navbar";
 import Providers from "@/components/Providers";
-import Sidebar from "@/components/Sidebar";
+// import Sidebar from "@/components/Sidebar";
 import Toaster from "@/components/ui/Toaster";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 import { Inter } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "ChessMates",
@@ -36,6 +38,8 @@ export default function RootLayout({
 
           <Toaster />
         </Providers>
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

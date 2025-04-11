@@ -163,6 +163,7 @@ export const authOptions: NextAuthOptions = {
     },
     async createUser({ user }) {
       // You can perform additional actions when a new user is created
+      // TODO Verification
     },
   },
 };
