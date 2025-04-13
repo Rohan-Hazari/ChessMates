@@ -16,11 +16,13 @@ export default async function Home() {
   return (
     <>
       <h1 className="font-bold text-3xl md:text-4xl">Home</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-4 py-6">
-        <Suspense fallback={<FeedSkeletonLoading />}>
-          {/* @ts-expect-error server component */}
-          {session ? <CustomFeed /> : <GeneralFeed />}
-        </Suspense>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 md:gap-x-4 py-6">
+        <div>
+          <Suspense fallback={<FeedSkeletonLoading />}>
+            {/* @ts-expect-error server component */}
+            {session ? <CustomFeed /> : <GeneralFeed />}
+          </Suspense>
+        </div>
         {/* community info */}
         <div className=" col-span-1 overflow-hidden h-fit rounded-lg border border-gray-200 order-first md:order-last">
           <div className="bg-orange-100 px-6 py-4">

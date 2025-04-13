@@ -1,8 +1,8 @@
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { redis } from "@/lib/redis";
+// import { redis } from "@/lib/redis";
 import { PostVoteValidator } from "@/lib/validators/vote";
-import { CachedPost } from "@/types/redis";
+// import { CachedPost } from "@/types/redis";
 import { z } from "zod";
 
 const CACHE_AFTER_UPVOTES = 1;
@@ -67,19 +67,19 @@ export async function PATCH(req: Request) {
         return acc;
       }, 0);
 
-      if (votesAmt === CACHE_AFTER_UPVOTES) {
-        const cachePayload: CachedPost = {
-          name: post.author.name ?? "",
-          authorUsername: post.author.name ?? "",
-          content: JSON.stringify(post.content),
-          id: post.id,
-          title: post.title,
-          currentVote: voteType,
-          createdAt: post.createdAt,
-        };
+      // if (votesAmt === CACHE_AFTER_UPVOTES) {
+      //   const cachePayload: CachedPost = {
+      //     name: post.author.name ?? "",
+      //     authorUsername: post.author.name ?? "",
+      //     content: JSON.stringify(post.content),
+      //     id: post.id,
+      //     title: post.title,
+      //     currentVote: voteType,
+      //     createdAt: post.createdAt,
+      //   };
 
-        await redis.hset(`post:${postId}`, cachePayload);
-      }
+      //   await redis.hset(`post:${postId}`, cachePayload);
+      // }
 
       return new Response("OK");
     }
@@ -98,19 +98,19 @@ export async function PATCH(req: Request) {
       return acc;
     }, 0);
 
-    if (votesAmt === CACHE_AFTER_UPVOTES) {
-      const cachePayload: CachedPost = {
-        name: post.author.name ?? "",
-        authorUsername: post.author.name ?? "",
-        content: JSON.stringify(post.content),
-        id: post.id,
-        title: post.title,
-        currentVote: voteType,
-        createdAt: post.createdAt,
-      };
+    // if (votesAmt === CACHE_AFTER_UPVOTES) {
+    //   const cachePayload: CachedPost = {
+    //     name: post.author.name ?? "",
+    //     authorUsername: post.author.name ?? "",
+    //     content: JSON.stringify(post.content),
+    //     id: post.id,
+    //     title: post.title,
+    //     currentVote: voteType,
+    //     createdAt: post.createdAt,
+    //   };
 
-      await redis.hset(`post:${postId}`, cachePayload);
-    }
+    //   await redis.hset(`post:${postId}`, cachePayload);
+    // }s
 
     return new Response("OK");
   } catch (error) {

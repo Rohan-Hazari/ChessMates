@@ -101,3 +101,7 @@ export const convertFENToBoard = (fen: string): Piece[][] => {
 
   return board;
 };
+
+export const wait = (ms: number) => {
+  return new Promise((res) => setTimeout(res, ms));
+};

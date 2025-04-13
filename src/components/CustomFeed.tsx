@@ -4,10 +4,6 @@ import PostFeed from "./PostFeed";
 // import { getAuthSession } from "@/lib/auth";
 import { getSessionFromRequest } from "@/lib/session";
 
-const wait = (ms: number) => {
-  return new Promise((res) => setTimeout(res, ms));
-};
-
 const CustomFeed = async () => {
   // await wait(10000)
 
