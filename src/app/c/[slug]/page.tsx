@@ -1,9 +1,8 @@
 import CreatePost from "@/components/CreatePost";
 import PostFeed from "@/components/PostFeed";
 import { INFINITE_SCROLLING_PAGINATION_RESULT } from "@/config";
-// import { getAuthSession } from "@/lib/auth";
+import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { getSessionFromRequest } from "@/lib/session";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -14,7 +13,7 @@ interface PageProps {
 
 const page = async ({ params }: PageProps) => {
   const { slug } = params;
-  const session = await getSessionFromRequest();
+  const session = await getAuthSession();
   const community = await db.community.findFirst({
     where: {
       name: slug,

@@ -2,9 +2,8 @@ import CustomFeed from "@/components/CustomFeed";
 import GeneralFeed from "@/components/GeneralFeed";
 import { FeedSkeletonLoading } from "@/components/SkeletonLoaders/Feed";
 import { buttonVariants } from "@/components/ui/Button";
-import { getSessionFromRequest } from "@/lib/session";
 import { HomeIcon } from "lucide-react";
-// import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -12,12 +11,12 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 export default async function Home() {
-  const session = await getSessionFromRequest();
+  const session = await getServerSession();
   return (
     <>
       <h1 className="font-bold text-3xl md:text-4xl">Home</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 md:gap-x-4 py-6">
-        <div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-4 py-6">
+        <div className="col-span-2">
           <Suspense fallback={<FeedSkeletonLoading />}>
             {/* @ts-expect-error server component */}
             {session ? <CustomFeed /> : <GeneralFeed />}

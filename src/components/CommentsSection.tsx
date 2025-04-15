@@ -1,6 +1,5 @@
-// import { getAuthSession } from "@/lib/auth";
+import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { getSessionFromRequest } from "@/lib/session";
 import dynamic from "next/dynamic";
 const CreateComment = dynamic(() => import("./CreateComment"), { ssr: false });
 const CommentsContainer = dynamic(() => import("./CommentsContainer"), {
@@ -11,7 +10,7 @@ interface CommentsSectionProps {
 }
 
 const CommentsSection = async ({ postId }: CommentsSectionProps) => {
-  const session = await getSessionFromRequest();
+  const session = await getAuthSession();
 
   const comments = await db.comment.findMany({
     where: {

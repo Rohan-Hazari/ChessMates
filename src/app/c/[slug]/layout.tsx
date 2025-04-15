@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Pencil } from "lucide-react";
 import BackButton from "@/components/CommunityBackButton";
 import DynamicLink from "@/components/ui/DynamicLink";
-import { getSessionFromRequest } from "@/lib/session";
+import { getAuthSession } from "@/lib/auth";
 
 const Layout = async ({
   children,
@@ -16,7 +16,7 @@ const Layout = async ({
   children: React.ReactNode;
   params: { slug: string };
 }) => {
-  const session = await getSessionFromRequest()
+  const session = await getAuthSession();
 
   const community = await db.community.findFirst({
     where: {
@@ -36,15 +36,15 @@ const Layout = async ({
   const subscription = !session?.user
     ? undefined
     : await db.subscription.findFirst({
-      where: {
-        community: {
-          name: slug,
+        where: {
+          community: {
+            name: slug,
+          },
+          user: {
+            id: session.user.id,
+          },
         },
-        user: {
-          id: session.user.id,
-        },
-      },
-    });
+      });
 
   // !! operator turns any value into boolean based on whether its truth or falsy
   const isSubscribed = !!subscription;
@@ -74,7 +74,7 @@ const Layout = async ({
               <div className="font-semibold py-3 flex justify-between items-center">
                 <p>About {community.name}</p>
                 {/* Edit description for creator  */}
-                {community.creatorId === session?.user.id ? (
+                {community.creatorId === session?.user?.id ? (
                   <Link
                     title="Edit description"
                     className="hover:bg-gray-300 rounded-md transition-colors "

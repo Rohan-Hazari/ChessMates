@@ -1,11 +1,11 @@
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-// import { redis } from "@/lib/redis";
+import { redis } from "@/lib/redis";
 import { PostVoteValidator } from "@/lib/validators/vote";
-// import { CachedPost } from "@/types/redis";
+import { CachedPost } from "@/types/redis";
 import { z } from "zod";
 
-const CACHE_AFTER_UPVOTES = 1;
+const CACHE_AFTER_UPVOTES = 10;
 
 export async function PATCH(req: Request) {
   try {
@@ -36,6 +36,12 @@ export async function PATCH(req: Request) {
     if (!post) {
       return new Response("Post not found", { status: 404 });
     }
+
+    const votesAmt = post.votes.reduce((acc, vote) => {
+      if (vote.type === "UP") return acc + 1;
+      if (vote.type === "DOWN") return acc - 1;
+      return acc;
+    }, 0);
     //  unselect the existing vote and update the new vote
     if (existingVote) {
       if (existingVote.type === voteType) {
@@ -50,67 +56,51 @@ export async function PATCH(req: Request) {
         return new Response("OK");
       }
 
-      await db.vote.update({
-        where: {
-          userId_postId: {
-            postId,
-            userId: session.user.id,
-          },
-        },
-        data: {
-          type: voteType,
-        },
-      });
-      const votesAmt = post.votes.reduce((acc, vote) => {
-        if (vote.type === "UP") return acc + 1;
-        if (vote.type === "DOWN") return acc - 1;
-        return acc;
-      }, 0);
-
-      // if (votesAmt === CACHE_AFTER_UPVOTES) {
-      //   const cachePayload: CachedPost = {
-      //     name: post.author.name ?? "",
-      //     authorUsername: post.author.name ?? "",
-      //     content: JSON.stringify(post.content),
-      //     id: post.id,
-      //     title: post.title,
-      //     currentVote: voteType,
-      //     createdAt: post.createdAt,
-      //   };
-
-      //   await redis.hset(`post:${postId}`, cachePayload);
-      // }
+      if (votesAmt >= CACHE_AFTER_UPVOTES) {
+        const cachePayload: CachedPost = {
+          name: post.author.name ?? "",
+          authorUsername: post.author.name ?? "",
+          content: JSON.stringify(post.content),
+          id: post.id,
+          title: post.title,
+          currentVote: voteType,
+          createdAt: post.createdAt,
+        };
+        await redis.hset(`post:${postId}`, cachePayload);
+      }
 
       return new Response("OK");
+    } else {
+      await db.vote.upsert({
+        where: {
+          userId_postId: {
+            userId: session.user.id,
+            postId,
+          },
+        },
+        update: {
+          type: voteType,
+        },
+        create: {
+          type: voteType,
+          userId: session.user.id,
+          postId,
+        },
+      });
     }
 
-    await db.vote.create({
-      data: {
-        type: voteType,
-        userId: session.user.id,
-        postId,
-      },
-    });
-
-    const votesAmt = post.votes.reduce((acc, vote) => {
-      if (vote.type === "UP") return acc + 1;
-      if (vote.type === "DOWN") return acc - 1;
-      return acc;
-    }, 0);
-
-    // if (votesAmt === CACHE_AFTER_UPVOTES) {
-    //   const cachePayload: CachedPost = {
-    //     name: post.author.name ?? "",
-    //     authorUsername: post.author.name ?? "",
-    //     content: JSON.stringify(post.content),
-    //     id: post.id,
-    //     title: post.title,
-    //     currentVote: voteType,
-    //     createdAt: post.createdAt,
-    //   };
-
-    //   await redis.hset(`post:${postId}`, cachePayload);
-    // }s
+    if (votesAmt >= CACHE_AFTER_UPVOTES) {
+      const cachePayload: CachedPost = {
+        name: post.author.name ?? "",
+        authorUsername: post.author.name ?? "",
+        content: JSON.stringify(post.content),
+        id: post.id,
+        title: post.title,
+        currentVote: voteType,
+        createdAt: post.createdAt,
+      };
+      await redis.hset(`post:${postId}`, cachePayload);
+    }
 
     return new Response("OK");
   } catch (error) {
@@ -118,6 +108,8 @@ export async function PATCH(req: Request) {
       return new Response("Invalid request data ", { status: 422 });
     }
 
-    return new Response("Could not register your vote", { status: 500 });
+    return new Response("Could not register your vote " + error, {
+      status: 500,
+    });
   }
 }

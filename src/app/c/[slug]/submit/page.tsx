@@ -2,8 +2,7 @@ import { Button } from "@/components/ui/Button";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Editor from "@/components/Editor";
-// import { getAuthSession } from "@/lib/auth";
-import { getSessionFromRequest } from "@/lib/session";
+import { getAuthSession } from "@/lib/auth";
 
 interface pageProps {
   params: {
@@ -12,7 +11,7 @@ interface pageProps {
 }
 
 const page = async ({ params }: pageProps) => {
-  const session = await getSessionFromRequest()
+  const session = await getAuthSession();
   const community = await db.community.findFirst({
     where: {
       name: params.slug,
@@ -24,15 +23,15 @@ const page = async ({ params }: pageProps) => {
   const subscription = !session?.user
     ? undefined
     : await db.subscription.findFirst({
-      where: {
-        community: {
-          name: params.slug,
+        where: {
+          community: {
+            name: params.slug,
+          },
+          user: {
+            id: session.user.id,
+          },
         },
-        user: {
-          id: session.user.id,
-        },
-      },
-    });
+      });
 
   // !! operator turns any value into boolean based on whether its truth or falsy
   const isSubscribed = !!subscription;
