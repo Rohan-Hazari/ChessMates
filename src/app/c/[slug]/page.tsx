@@ -49,7 +49,7 @@ const page = async ({ params }: PageProps) => {
         c/{community.name}
       </h1>
       <CreatePost session={session} />
-      {/* Show posts in user feed */}
+      {/* Show posts in user feed  */}
       <PostFeed initialPosts={community.posts} communityName={community.name} />
     </>
   );

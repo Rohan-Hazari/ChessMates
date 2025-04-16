@@ -1,6 +1,6 @@
 import CustomFeed from "@/components/CustomFeed";
 import GeneralFeed from "@/components/GeneralFeed";
-import { FeedSkeletonLoading } from "@/components/SkeletonLoaders/Feed";
+import { FeedSkeletonLoading } from "@/components/Loaders/Feed";
 import { buttonVariants } from "@/components/ui/Button";
 import { HomeIcon } from "lucide-react";
 import { getServerSession } from "next-auth";

@@ -9,13 +9,13 @@ import BackButton from "@/components/CommunityBackButton";
 import DynamicLink from "@/components/ui/DynamicLink";
 import { getAuthSession } from "@/lib/auth";
 
-const Layout = async ({
+export default async function Layout({
   children,
   params: { slug },
 }: {
   children: React.ReactNode;
   params: { slug: string };
-}) => {
+}) {
   const session = await getAuthSession();
 
   const community = await db.community.findFirst({
@@ -136,6 +136,4 @@ const Layout = async ({
       </div>
     </div>
   );
-};
-
-export default Layout;
+}

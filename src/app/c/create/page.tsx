@@ -7,7 +7,8 @@ import { toast } from "@/hooks/use-toast";
 import { CreateCommunityPayload } from "@/lib/validators/community";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const Page = () => {
@@ -69,6 +70,11 @@ const Page = () => {
       router.push(`${data}`);
     },
   });
+
+  const { data: session } = useSession();
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
 
   return (
     <div className="container flex items-center h-full max-w-3xl mx-auto">
