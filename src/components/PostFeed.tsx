@@ -8,6 +8,7 @@ import { INFINITE_SCROLLING_PAGINATION_RESULT } from "@/config";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import Post from "./Post";
+import { FeedSkeletonLoading } from "./Loaders/Feed";
 // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 
 interface PostFeedProps {
@@ -113,16 +114,11 @@ const PostFeed: FC<PostFeedProps> = ({
         }
       })}
       {isFetchingNextPage && (
-        <div className="sticky bottom-0 left-1/2 flex justify-center items-center bg-gradient-to-b from-transparent to-white  text-amber-500">
-          {/* <FeedSkeletonLoading /> */}
+        <div className="left-1/2 flex justify-center items-center bg-gradient-to-b from-transparent to-white  text-amber-500">
+          <FeedSkeletonLoading />
         </div>
       )}
-      {!hasNextPage && renderNoMorePosts()}
-      {noSubscriptions && (
-        <p className="text-orange-500 font-semibold text-center">
-          Explore and subscribe to communities to see more posts
-        </p>
-      )}
+      {!hasNextPage && !isFetchingNextPage && renderNoMorePosts()}
     </div>
   );
 };

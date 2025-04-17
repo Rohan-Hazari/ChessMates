@@ -28,7 +28,7 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
   const { loginToast } = useCustomToast();
   const [votesAmt, setVotesAmt] = useState<number>(initialVotesAmt);
   const [currentVote, setCurrentVote] = useState(initialVote);
-  const [loading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const previousVote = usePrevious(currentVote);
   const { data: session } = useSession();
 
@@ -76,6 +76,7 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
     // Optimistic updates , before request is resolved do this
     onMutate: (type: VoteType) => {
       // if the user is pressing on the same vote button , remove it
+      setIsLoading(true);
       if (session) {
         if (currentVote === type) {
           setCurrentVote(undefined);
@@ -103,7 +104,9 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
         aria-label="upvote"
         disabled={!session}
         title={!session ? "Log in to vote" : "Upvote"}
-        onClick={() => vote("UP")}
+        onClick={() => {
+          if (!isLoading) vote("UP");
+        }}
       >
         <ArrowBigUp
           className={cn("h-5 w-5 text-zinc-700", {
@@ -113,7 +116,7 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
       </Button>
 
       <p className="text-center grow-0 sm:py-2 font-medium text-sm flex justify-center text-zinc-900">
-        {loading ? (
+        {isLoading ? (
           <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
         ) : (
           votesAmt ?? 10
@@ -124,7 +127,9 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
         variant="ghost"
         aria-label="downvote"
         disabled={!session}
-        onClick={() => vote("DOWN")}
+        onClick={() => {
+          if (!isLoading) vote("DOWN");
+        }}
       >
         <ArrowBigDown
           className={cn("h-5 w-5 text-zinc-700", {

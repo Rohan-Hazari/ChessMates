@@ -1,9 +1,11 @@
 import CreatePost from "@/components/CreatePost";
+import { FeedSkeletonLoading } from "@/components/Loaders/Feed";
 import PostFeed from "@/components/PostFeed";
 import { INFINITE_SCROLLING_PAGINATION_RESULT } from "@/config";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 interface PageProps {
   params: {
@@ -50,7 +52,12 @@ const page = async ({ params }: PageProps) => {
       </h1>
       <CreatePost session={session} />
       {/* Show posts in user feed  */}
-      <PostFeed initialPosts={community.posts} communityName={community.name} />
+      <Suspense fallback={<FeedSkeletonLoading />}>
+        <PostFeed
+          initialPosts={community.posts}
+          communityName={community.name}
+        />
+      </Suspense>
     </>
   );
 };
