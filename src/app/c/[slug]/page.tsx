@@ -1,10 +1,11 @@
 import CreatePost from "@/components/CreatePost";
+import { FeedSkeletonLoading } from "@/components/Loaders/Feed";
 import PostFeed from "@/components/PostFeed";
 import { INFINITE_SCROLLING_PAGINATION_RESULT } from "@/config";
-// import { getAuthSession } from "@/lib/auth";
+import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { getSessionFromRequest } from "@/lib/session";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 interface PageProps {
   params: {
@@ -14,7 +15,7 @@ interface PageProps {
 
 const page = async ({ params }: PageProps) => {
   const { slug } = params;
-  const session = await getSessionFromRequest();
+  const session = await getAuthSession();
   const community = await db.community.findFirst({
     where: {
       name: slug,
@@ -50,8 +51,13 @@ const page = async ({ params }: PageProps) => {
         c/{community.name}
       </h1>
       <CreatePost session={session} />
-      {/* Show posts in user feed */}
-      <PostFeed initialPosts={community.posts} communityName={community.name} />
+      {/* Show posts in user feed  */}
+      <Suspense fallback={<FeedSkeletonLoading />}>
+        <PostFeed
+          initialPosts={community.posts}
+          communityName={community.name}
+        />
+      </Suspense>
     </>
   );
 };

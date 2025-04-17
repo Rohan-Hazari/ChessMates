@@ -5,10 +5,9 @@ import PostVoteServer from "@/components/post-vote/PostVoteServer";
 import { buttonVariants } from "@/components/ui/Button";
 import { toast } from "@/hooks/use-toast";
 import { db } from "@/lib/db";
-// import { redis } from '@/lib/redis'
+import { redis } from "@/lib/redis";
 import { formatTimeToNow } from "@/lib/utils";
 import { CachedPost } from "@/types/redis";
-// import { CachedPost } from '@/types/redis'
 import { Post, User, Vote } from "@prisma/client";
 import { ArrowBigDown, ArrowBigUp, Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -27,18 +26,18 @@ const page = async ({ params }: pageProps) => {
   let cachedPost: CachedPost | null = null;
   let post: (Post & { votes: Vote[]; author: User }) | null = null;
   try {
-    // cachedPost = (await redis.hgetall(`post:${params.postId}`)) as CachedPost
-    // if (!cachedPost) {
-    post = await db.post.findFirst({
-      where: {
-        id: params.postId,
-      },
-      include: {
-        votes: true,
-        author: true,
-      },
-    });
-    // }
+    cachedPost = (await redis.hgetall(`post:${params.postId}`)) as CachedPost;
+    if (!cachedPost) {
+      post = await db.post.findFirst({
+        where: {
+          id: params.postId,
+        },
+        include: {
+          votes: true,
+          author: true,
+        },
+      });
+    }
   } catch (error) {
     toast({
       title: "Server error",
@@ -76,15 +75,20 @@ const page = async ({ params }: pageProps) => {
         {/* votes and comments will be dynamically streamed in while the crucial content will be shown immediately */}
         <Suspense fallback={<PostVoteSkeleton />}>
           {/* @ts-expect-error server component */}
-          <PostVoteServer postId={post?.id ?? ""} getData={getData} />
+          <PostVoteServer
+            postId={post?.id ?? cachedPost?.id ?? ""}
+            getData={getData}
+          />
         </Suspense>
         <div className="sm:w-0 w-full flex-1 bg-white p-4 rounded-sm">
           <p className="max-h-40 mt-1 truncate text-xs text-gray-500">
-            Posted by u/{post?.author.name ?? " "}
-            {formatTimeToNow(new Date(post?.createdAt ?? ""))}
+            Posted by u/{post?.author.name ?? cachedPost?.name}
+            {formatTimeToNow(
+              new Date(post?.createdAt ?? cachedPost?.createdAt ?? "")
+            )}
           </p>
           <h1 className="text-xl font-semibold py-2 leading-6 text-gray-900">
-            {post?.title ?? ""}
+            {post?.title ?? cachedPost?.title}
           </h1>
 
           {post?.postType === "chess" ? (
@@ -93,7 +97,7 @@ const page = async ({ params }: pageProps) => {
               fen={post.boardFen}
             />
           ) : (
-            <EditorOutput content={post?.content ?? ""} />
+            <EditorOutput content={post?.content ?? cachedPost?.content} />
           )}
 
           <Suspense

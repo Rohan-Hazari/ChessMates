@@ -1,13 +1,12 @@
 import { INFINITE_SCROLLING_PAGINATION_RESULT } from "@/config";
 import { db } from "@/lib/db";
 import PostFeed from "./PostFeed";
-// import { getAuthSession } from "@/lib/auth";
-import { getSessionFromRequest } from "@/lib/session";
+import { getAuthSession } from "@/lib/auth";
 
 const CustomFeed = async () => {
   // await wait(10000)
 
-  const session = await getSessionFromRequest();
+  const session = await getAuthSession();
   let noSubscriptions = false;
 
   const followedCommunities = await db.subscription.findMany({
