@@ -50,10 +50,6 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
       }
     },
     onError: (err, voteType) => {
-      if (voteType === "UP") {
-        setVotesAmt((prev) => prev - 1);
-      } else setVotesAmt((prev) => prev + 1);
-
       setCurrentVote(previousVote);
 
       if (err instanceof AxiosError) {
@@ -67,6 +63,9 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
           });
         }
       } else {
+        if (voteType === "UP") {
+          setVotesAmt((prev) => prev - 1);
+        } else setVotesAmt((prev) => prev + 1);
         return toast({
           title: "Something went wrong",
           description: " Your vote was not submitted, please try again",

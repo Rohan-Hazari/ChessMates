@@ -20,6 +20,10 @@ const UserAuthForm = () => {
   const [input, setInput] = useState({ name: "", password: "" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCaptchaVerified, setCaptchaVerified] = useState<boolean>(false);
+  const isFormValid =
+    input.name.trim() !== "" &&
+    input.password.trim() !== "" &&
+    isCaptchaVerified;
   const recaptcha = useRef<ReCAPTCHA | null>(null);
   const { toast } = useToast();
   const router = useRouter();
@@ -116,6 +120,7 @@ const UserAuthForm = () => {
   const handleCaptchaChange = async (token: string | null) => {
     if (token) {
       try {
+        setIsLoading(true);
         const response = await axios.post("/api/captcha-verify", { token });
         if (response.status === 200) {
           setCaptchaVerified(true);
@@ -127,6 +132,8 @@ const UserAuthForm = () => {
           description: "CAPTCHA Verification error,Please try again",
           variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -156,18 +163,21 @@ const UserAuthForm = () => {
             }));
           }}
         />
-        <ReCAPTCHA
-          ref={recaptcha}
-          onChange={handleCaptchaChange}
-          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
-          onExpired={handleExpiredCaptcha}
-        />
+        <div className="mx-auto">
+          <ReCAPTCHA
+            ref={recaptcha}
+            onChange={handleCaptchaChange}
+            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
+            onExpired={handleExpiredCaptcha}
+            size="compact"
+          />
+        </div>
         <Button
           onClick={(e) => {
             e.preventDefault();
             loginWithCredentials();
           }}
-          disabled={!isCaptchaVerified || isLoading}
+          disabled={!isFormValid || isLoading}
           isLoading={isLoading}
           size="sm"
           className="w-full"
@@ -187,7 +197,7 @@ const UserAuthForm = () => {
       <div className="flex justify-center">
         <Button
           onClick={() => loginWithGoogle()}
-          disabled={!isCaptchaVerified || isLoading}
+          disabled={!isFormValid || isLoading}
           isLoading={isLoading}
           size="sm"
           className="w-full"
