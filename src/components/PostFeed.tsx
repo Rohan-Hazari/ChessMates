@@ -31,13 +31,16 @@ const PostFeed: FC<PostFeedProps> = ({
     threshold: 1,
   });
 
-  const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } =
     useInfiniteQuery(
       // unique key
       ["infinite-query"],
 
       // function called each time a new page of data is needed
       async ({ pageParam = 1 }) => {
+        if (pageParam === 1 && safeInitialPosts.length > 0) {
+          return safeInitialPosts;
+        }
         const query =
           `/api/posts?limit=${INFINITE_SCROLLING_PAGINATION_RESULT}&page=${pageParam}` +
           (!!communityName
@@ -60,6 +63,7 @@ const PostFeed: FC<PostFeedProps> = ({
           return pages.length + 1;
         },
         initialData: { pages: [safeInitialPosts], pageParams: [1] },
+        enabled: safeInitialPosts.length === 0,
       }
     );
 
@@ -113,7 +117,7 @@ const PostFeed: FC<PostFeedProps> = ({
           );
         }
       })}
-      {isFetchingNextPage && (
+      {(isFetchingNextPage || isLoading) && (
         <div className="left-1/2 flex justify-center items-center bg-gradient-to-b from-transparent to-white  text-amber-500">
           <FeedSkeletonLoading />
         </div>
