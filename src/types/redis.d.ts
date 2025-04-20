@@ -3,9 +3,11 @@ import { Vote } from "@prisma/client";
 export type CachedPost = {
   id: string;
   title: string;
-  name: string;
+  authorId: string;
   authorUsername: string;
   content: string;
-  currentVote: Vote["type"] | null;
   createdAt: Date;
+  postType?: string | null;
+  boardFen?: string | null;
+  gamePGN?: string | null;
 };
