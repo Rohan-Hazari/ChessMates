@@ -6,9 +6,10 @@ generator client {
 }
 
 datasource db {
-  provider     = "postgresql"
-  url          = env("DATABASE_URL")
-  relationMode = "foreignKeys"
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_URL")
+  relationMode      = "foreignKeys"
 }
 
 model Account {
@@ -147,4 +148,32 @@ model CommentVote {
   type      VoteType
 
   @@id([userId, commentId])
+}
+
+model Transalation {
+  id             String @id @default(cuid())
+  newsId         String
+  title          String
+  description    String
+  targetLanguage String
+  news           News   @relation(fields: [newsId], references: [id])
+}
+
+model News {
+  id          String         @id @default(cuid())
+  title       String
+  description String
+  sourceLinks String[]
+  imageUrl    String?
+  publishedAt DateTime?      @default(now())
+  translated  Transalation[]
+}
+
+model DailyPuzzle {
+  id          String   @id @default(cuid())
+  title       String
+  fen         String
+  solution    String?
+  createdAt   DateTime @default(now())
+  publishedAt DateTime @default(now())
 }
