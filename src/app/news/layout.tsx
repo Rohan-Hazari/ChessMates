@@ -7,9 +7,6 @@ export default async function NewsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const news = await db.news.findMany({
-    take: INFINITE_SCROLLING_PAGINATION_NEWS_RESULT,
-  });
   return (
     <div>
       <h1 className="font-bold text-3xl md:text-4xl">News page</h1>
