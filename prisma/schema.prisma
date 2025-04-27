@@ -173,7 +173,11 @@ model DailyPuzzle {
   id          String   @id @default(cuid())
   title       String
   fen         String
-  solution    String?
+  solution    String
+  hint        String
+  difficulty  String
+  mateInN     Int
+  theme       String
   createdAt   DateTime @default(now())
   publishedAt DateTime @default(now())
 }
