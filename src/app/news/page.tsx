@@ -7,14 +7,14 @@ const page = async () => {
     include: {
       translated: true,
     },
+    orderBy: {
+      publishedAt: "desc",
+    },
     take: INFINITE_SCROLLING_PAGINATION_NEWS_RESULT,
   });
   return (
     <div>
-      <h1 className="">Hello NewsPost</h1>
-      <div>
-        <NewsFeed initialNews={news} />
-      </div>
+      <NewsFeed initialNews={news} />
     </div>
   );
 };

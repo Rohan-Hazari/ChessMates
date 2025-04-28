@@ -101,6 +101,13 @@ export const convertFENToBoard = (fen: string): Piece[][] => {
 
   return board;
 };
+/** Extracts the very first name from url Ex chess from https://www.chess.com or docs from https://docs.chess.com */
+export const extractMainDomain = (url: string) => {
+  const domain = url.split("//")[1]?.split(".com")[0];
+  if (!domain) return "";
+  const parts = domain.split(".");
+  return parts[0] === "www" ? parts[1] : parts[0];
+};
 
 export const wait = (ms: number) => {
   return new Promise((res) => setTimeout(res, ms));
