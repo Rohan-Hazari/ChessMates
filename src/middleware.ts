@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 import { ratelimit } from "./lib/redis";
 
 const rateLimitedPaths = ["/api/community/post/vote"];
@@ -18,18 +17,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-
-  // Store token in request headers to avoid re-fetching
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-auth-token", JSON.stringify(token));
-
-  return NextResponse.next({
-    headers: requestHeaders,
-  });
+  return NextResponse.next();
 }
 
 export const config = {

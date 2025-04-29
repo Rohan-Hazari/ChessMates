@@ -18,14 +18,16 @@ import { ChevronDown, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { extractMainDomain } from "@/lib/utils";
 import { TranslatedNews } from "@/types/news";
-import { LanguageDisplayMap } from "@/constants/language";
+import { DevanagariLanguages, LanguageDisplayMap } from "@/constants/language";
 
 interface NewsPostProps {
   news: TranslatedNews;
 }
 
 const NewsPost: FC<NewsPostProps> = ({ news }) => {
+  const [isNewsPopupOpen, setNewsPopupOpen] = useState<boolean>(false);
   const [newsLanguage, setNewsLanguage] = useState<string>("hi-EN");
+  let isDevanagari = DevanagariLanguages.includes(newsLanguage);
 
   const currentTranslation = useMemo(() => {
     if (newsLanguage === "hi-EN") {
@@ -43,6 +45,10 @@ const NewsPost: FC<NewsPostProps> = ({ news }) => {
     setNewsLanguage(language);
   };
 
+  const toggleNewsPopup = () => {
+    setNewsPopupOpen((prev) => !prev);
+  };
+
   const availableLanguages = useMemo(() => {
     const languages = ["hi-EN"];
     news.translated.forEach((translation) => {
@@ -52,66 +58,74 @@ const NewsPost: FC<NewsPostProps> = ({ news }) => {
   }, [news.translated]);
 
   return (
-    <Card className="w-full">
-      {/* TODO: Fix CLS issue when switched from Spaced out to condensed language */}
-      <CardHeader>
-        <CardTitle className="text-xl">{currentTranslation.title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-muted-foreground">
-          {currentTranslation.description}
-        </p>
-      </CardContent>
-      <CardFooter className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="w-full sm:w-auto">
-          {news.sourceLinks && news.sourceLinks.length > 0 && (
-            <div className="flex flex-wrap gap-2 items-center">
-              <span className="text-sm font-medium">Sources:</span>
-              <div className="flex flex-wrap gap-2">
-                {news.sourceLinks.map((source, index) => (
-                  <Link
-                    key={index}
-                    href={source}
-                    className="text-sm flex items-center gap-1 text-primary hover:underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Visit source: ${extractMainDomain(source)}`}
-                  >
-                    {extractMainDomain(source)}
-                    <ExternalLink className="h-3 w-3" />
-                  </Link>
-                ))}
+    <>
+      <Card
+        onClick={() => toggleNewsPopup}
+        className="w-full h-full flex flex-col "
+      >
+        <CardHeader>
+          <CardTitle className="text-xl">{currentTranslation.title}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex-1">
+          <p
+            className={`${
+              isDevanagari ? "tracking-wider" : ""
+            }  text-muted-foreground line-clamp-4`}
+          >
+            {currentTranslation.description}
+          </p>
+        </CardContent>
+        <CardFooter className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="w-full sm:w-auto">
+            {news.sourceLinks && news.sourceLinks.length > 0 && (
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-sm font-medium">Sources:</span>
+                <div className="flex flex-wrap gap-2">
+                  {news.sourceLinks.map((source, index) => (
+                    <Link
+                      key={index}
+                      href={source}
+                      className="text-sm flex items-center gap-1 text-primary hover:underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Visit source: ${extractMainDomain(source)}`}
+                    >
+                      {extractMainDomain(source)}
+                      <ExternalLink className="h-3 w-3" />
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1 whitespace-nowrap"
-              aria-label="Select language"
-            >
-              {LanguageDisplayMap[newsLanguage] || "Language"}
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {availableLanguages.map((language) => (
-              <DropdownMenuItem
-                key={language}
-                onClick={() => handleLanguageChange(language)}
-                className={`${newsLanguage === language ? "bg-accent" : ""}`}
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 whitespace-nowrap"
+                aria-label="Select language"
               >
-                {LanguageDisplayMap[language] || language}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </CardFooter>
-    </Card>
+                {LanguageDisplayMap[newsLanguage] || "Language"}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {availableLanguages.map((language) => (
+                <DropdownMenuItem
+                  key={language}
+                  onClick={() => handleLanguageChange(language)}
+                  className={`${newsLanguage === language ? "bg-accent" : ""}`}
+                >
+                  {LanguageDisplayMap[language] || language}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardFooter>
+      </Card>
+    </>
   );
 };
 
