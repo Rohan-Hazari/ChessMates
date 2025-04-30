@@ -25,8 +25,8 @@ interface NewsPostProps {
 }
 
 const NewsPost: FC<NewsPostProps> = ({ news }) => {
-  const [isNewsPopupOpen, setNewsPopupOpen] = useState<boolean>(false);
   const [newsLanguage, setNewsLanguage] = useState<string>("hi-EN");
+  const [selectedNews, setSelectedNews] = useState<TranslatedNews | null>(null);
   let isDevanagari = DevanagariLanguages.includes(newsLanguage);
 
   const currentTranslation = useMemo(() => {
@@ -45,10 +45,6 @@ const NewsPost: FC<NewsPostProps> = ({ news }) => {
     setNewsLanguage(language);
   };
 
-  const toggleNewsPopup = () => {
-    setNewsPopupOpen((prev) => !prev);
-  };
-
   const availableLanguages = useMemo(() => {
     const languages = ["hi-EN"];
     news.translated.forEach((translation) => {
@@ -60,17 +56,19 @@ const NewsPost: FC<NewsPostProps> = ({ news }) => {
   return (
     <>
       <Card
-        onClick={() => toggleNewsPopup}
-        className="w-full h-full flex flex-col "
+        onClick={() => setSelectedNews(news)}
+        className="w-full h-full flex flex-col"
       >
         <CardHeader>
-          <CardTitle className="text-xl">{currentTranslation.title}</CardTitle>
+          <CardTitle className="text-xl cursor-pointer">
+            {currentTranslation.title}
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex-1">
           <p
             className={`${
               isDevanagari ? "tracking-wider" : ""
-            }  text-muted-foreground line-clamp-4`}
+            }  text-muted-foreground line-clamp-4 cursor-pointer`}
           >
             {currentTranslation.description}
           </p>
@@ -85,10 +83,11 @@ const NewsPost: FC<NewsPostProps> = ({ news }) => {
                     <Link
                       key={index}
                       href={source}
-                      className="text-sm flex items-center gap-1 text-primary hover:underline"
+                      className="text-sm flex items-center gap-1 text-blue-600 hover:underline"
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`Visit source: ${extractMainDomain(source)}`}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       {extractMainDomain(source)}
                       <ExternalLink className="h-3 w-3" />
@@ -100,31 +99,59 @@ const NewsPost: FC<NewsPostProps> = ({ news }) => {
           </div>
 
           <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 whitespace-nowrap"
-                aria-label="Select language"
-              >
-                {LanguageDisplayMap[newsLanguage] || "Language"}
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {availableLanguages.map((language) => (
-                <DropdownMenuItem
-                  key={language}
-                  onClick={() => handleLanguageChange(language)}
-                  className={`${newsLanguage === language ? "bg-accent" : ""}`}
+            <div onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1 whitespace-nowrap"
+                  aria-label="Select language"
                 >
-                  {LanguageDisplayMap[language] || language}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
+                  {LanguageDisplayMap[newsLanguage] || "Language"}
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {availableLanguages.map((language) => (
+                  <DropdownMenuItem
+                    key={language}
+                    onClick={() => handleLanguageChange(language)}
+                    className={`${
+                      newsLanguage === language ? "bg-accent" : ""
+                    }`}
+                  >
+                    {LanguageDisplayMap[language] || language}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </div>
           </DropdownMenu>
         </CardFooter>
       </Card>
+      {selectedNews && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-white dark:bg-black p-10 rounded-xl max-w-xl w-full">
+            <h2 className="text-2xl font-bold mb-4">
+              {currentTranslation.title}
+            </h2>
+            <p
+              className={`${
+                isDevanagari ? "tracking-wide" : ""
+              }  text-slate-800 cursor-text`}
+            >
+              {currentTranslation.description}
+            </p>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setSelectedNews(null)}
+                className="text-sm px-4 py-2 bg-primary text-white rounded"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
