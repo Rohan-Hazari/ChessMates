@@ -9,6 +9,8 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import Post from "./Post";
 import { FeedSkeletonLoading } from "./Loaders/Feed";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 
 interface PostFeedProps {
@@ -80,49 +82,51 @@ const PostFeed: FC<PostFeedProps> = ({
 
   return (
     <div className="flex flex-col col-span-2 space-y-6">
-      {posts.map((post, index) => {
-        const votesAmount = post.votes.reduce((acc, vote) => {
-          if (vote.type === "UP") return acc + 1;
-          if (vote.type === "DOWN") return acc - 1;
-          return acc;
-        }, 0);
+      <DndProvider backend={HTML5Backend}>
+        {posts.map((post, index) => {
+          const votesAmount = post.votes.reduce((acc, vote) => {
+            if (vote.type === "UP") return acc + 1;
+            if (vote.type === "DOWN") return acc - 1;
+            return acc;
+          }, 0);
 
-        // current vote is whether user has clicked UP or DOWN
-        const currentVote = post.votes.find(
-          (vote) => vote.userId === session?.user.id
-        );
-        // is current post the last one in posts array
-        if (index === posts.length - 1) {
-          return (
-            <div key={post.id} ref={ref}>
+          // current vote is whether user has clicked UP or DOWN
+          const currentVote = post.votes.find(
+            (vote) => vote.userId === session?.user.id
+          );
+          // is current post the last one in posts array
+          if (index === posts.length - 1) {
+            return (
+              <div key={post.id} ref={ref}>
+                <Post
+                  commentAmt={post.comments.length}
+                  post={post}
+                  communityName={post.community.name}
+                  votesAmt={votesAmount}
+                  currentVote={currentVote}
+                />
+              </div>
+            );
+          } else {
+            return (
               <Post
                 commentAmt={post.comments.length}
+                key={post.id}
                 post={post}
                 communityName={post.community.name}
                 votesAmt={votesAmount}
                 currentVote={currentVote}
               />
-            </div>
-          );
-        } else {
-          return (
-            <Post
-              commentAmt={post.comments.length}
-              key={post.id}
-              post={post}
-              communityName={post.community.name}
-              votesAmt={votesAmount}
-              currentVote={currentVote}
-            />
-          );
-        }
-      })}
-      {(isFetchingNextPage || isLoading) && (
-        <div className="left-1/2 flex justify-center items-center bg-gradient-to-b from-transparent to-white  text-amber-500">
-          <FeedSkeletonLoading />
-        </div>
-      )}
-      {!hasNextPage && !isFetchingNextPage && renderNoMorePosts()}
+            );
+          }
+        })}
+        {(isFetchingNextPage || isLoading) && (
+          <div className="left-1/2 flex justify-center items-center bg-gradient-to-b from-transparent to-white  text-amber-500">
+            <FeedSkeletonLoading />
+          </div>
+        )}
+        {!hasNextPage && !isFetchingNextPage && renderNoMorePosts()}
+      </DndProvider>
     </div>
   );
 };
