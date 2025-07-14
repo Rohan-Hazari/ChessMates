@@ -21,15 +21,22 @@ const Board: FC<BoardProps> = ({ fen }) => {
   const [rightClickedSquares, setRightClickedSquares] = useState<SquareStyles>(
     {}
   );
-  const [moveSquares, setMoveSquares] = useState<SquareStyles>({});
+  const [pastMoves, setPastMoves] = useState<Move[]>([]);
+  const [futureMoves, setFutureMoves] = useState<Move[]>([]);
   const [optionSquares, setOptionSquares] = useState<SquareStyles>({});
-  const safeGameMutate = (modify: (game: Chess) => void) => {
-    setGame((g) => {
-      const update = g;
-      modify(update);
-      return update;
+  const applyNewMoveToGame = (move: Move) => {
+    setGame((prevGame) => {
+      const newGameInstance = new Chess(prevGame.fen());
+      newGameInstance.move(move);
+      return newGameInstance;
     });
+    setPastMoves((prev) => {
+      // If we make a new move from an undone state, clear future moves
+      return [...prev, move];
+    });
+    setFutureMoves([]);
   };
+
   const getMoveOptions = (square: Square) => {
     const moves = game.moves({
       square,
@@ -58,19 +65,7 @@ const Board: FC<BoardProps> = ({ fen }) => {
     setOptionSquares(newSquares);
     return true;
   };
-  const makeRandomMove = () => {
-    const possibleMoves = game.moves();
-    console.log(game.ascii());
 
-    // exit if the game is over
-    if (game.isGameOver() || game.isDraw() || possibleMoves.length === 0)
-      return;
-    const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-    console.log(possibleMoves, randomIndex);
-    safeGameMutate((game: Chess) => {
-      game.move(possibleMoves[randomIndex]);
-    });
-  };
   function onSquareClick(square: Square) {
     setRightClickedSquares({});
 
@@ -97,6 +92,7 @@ const Board: FC<BoardProps> = ({ fen }) => {
         const hasMoveOptions = getMoveOptions(square);
         // if new piece, setMoveFrom, otherwise clear moveFrom
         setMoveFrom(hasMoveOptions ? square : null);
+        setOptionSquares(hasMoveOptions ? optionSquares : {});
         return;
       }
 
@@ -117,21 +113,20 @@ const Board: FC<BoardProps> = ({ fen }) => {
       }
 
       // is normal move
-      const gameCopy = new Chess(game.fen());
-      const move = gameCopy.move({
+      const tempGame = new Chess(game.fen());
+      const resultMove = tempGame.move({
         from: moveFrom,
         to: square,
         promotion: "q",
       });
 
       // if invalid, setMoveFrom and getMoveOptions
-      if (move === null) {
+      if (resultMove === null) {
         const hasMoveOptions = getMoveOptions(square);
         if (hasMoveOptions) setMoveFrom(square);
         return;
       }
-      setGame(gameCopy);
-      // setTimeout(makeRandomMove, 300);
+      applyNewMoveToGame(resultMove);
       setMoveFrom(null);
       setMoveTo(null);
       setOptionSquares({});
@@ -141,14 +136,15 @@ const Board: FC<BoardProps> = ({ fen }) => {
   function onPromotionPieceSelect(piece?: string) {
     // if no piece passed then user has cancelled dialog, don't make move and reset
     if (piece) {
-      const gameCopy = new Chess(game.fen());
-      gameCopy.move({
+      const tempGame = new Chess(game.fen());
+      const resultMove = tempGame.move({
         from: moveFrom as Square,
         to: moveTo as Square,
         promotion: piece ?? "q",
       });
-      setGame(gameCopy);
-      // setTimeout(makeRandomMove, 300);
+      if (resultMove) {
+        applyNewMoveToGame(resultMove);
+      }
     }
     setMoveFrom(null);
     setMoveTo(null);
@@ -169,6 +165,46 @@ const Board: FC<BoardProps> = ({ fen }) => {
             },
     });
   }
+
+  const handleUndo = () => {
+    if (pastMoves.length > 0) {
+      const lastMove = pastMoves[pastMoves.length - 1];
+      const newPastMoves = pastMoves.slice(0, pastMoves.length - 1);
+
+      const tempGame = new Chess(normalisedFen);
+      newPastMoves.forEach((move) => {
+        tempGame.move(move);
+      });
+
+      setGame(tempGame);
+      setPastMoves(newPastMoves);
+      setFutureMoves((prev) => [lastMove, ...prev]);
+
+      setMoveFrom(null);
+      setMoveTo(null);
+      setOptionSquares({});
+      setRightClickedSquares({});
+    }
+  };
+
+  const handleRedo = () => {
+    if (futureMoves.length > 0) {
+      const nextMove = futureMoves[0];
+      const newFutureMoves = futureMoves.slice(1);
+      const tempGame = new Chess(game.fen());
+      tempGame.move(nextMove);
+
+      setGame(tempGame);
+      setPastMoves((prev) => [...prev, nextMove]);
+      setFutureMoves(newFutureMoves);
+
+      setMoveFrom(null);
+      setMoveTo(null);
+      setOptionSquares({});
+      setRightClickedSquares({});
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center ">
       <div className="max-h-[420px] h-fit max-w-[420px] m-auto md:m-0">
@@ -185,7 +221,6 @@ const Board: FC<BoardProps> = ({ fen }) => {
             boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
           }}
           customSquareStyles={{
-            ...moveSquares,
             ...optionSquares,
             ...rightClickedSquares,
           }}
@@ -194,44 +229,10 @@ const Board: FC<BoardProps> = ({ fen }) => {
         />
       </div>
       <div className="w-full mt-2 flex justify-center sm:justify-start gap-x-6 ">
-        <Button
-          onClick={() => {
-            safeGameMutate((game) => {
-              game.undo();
-            });
-          }}
-        >
-          Back
-        </Button>
+        <Button onClick={handleUndo}>Back</Button>
         <Button onClick={() => setGame(new Chess(normalisedFen))}>Reset</Button>
-        <Button>Forward</Button>
+        <Button onClick={handleRedo}>Forward</Button>
       </div>
-      {/* <button
-        style={buttonStyle}
-        onClick={() => {
-          safeGameMutate((game:Chess) => {
-            game.reset();
-          });
-          setMoveSquares({});
-          setOptionSquares({});
-          setRightClickedSquares({});
-        }}
-      >
-        reset
-      </button>
-      <button
-        style={buttonStyle}
-        onClick={() => {
-          safeGameMutate((game) => {
-            game.undo();
-          });
-          setMoveSquares({});
-          setOptionSquares({});
-          setRightClickedSquares({});
-        }}
-      >
-        undo
-      </button> */}
     </div>
   );
 };
