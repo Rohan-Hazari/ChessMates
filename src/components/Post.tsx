@@ -7,6 +7,7 @@ import EditorOutput from "./EditorOutput";
 import PostVoteClient from "./post-vote/PostVoteClient";
 import ChessPostBoard from "./chess/ChessPostBoard";
 import { Button } from "./ui/Button";
+import Board from "./chess/Board";
 
 type PartialVote = Pick<Vote, "type">;
 
@@ -69,18 +70,18 @@ const Post: FC<PostProps> = ({
             ref={pRef}
           >
             {isPostTypeChess ? (
-              <ChessPostBoard
-                boardSolution={post.boardSolution}
+              <Board
+                // boardSolution={post.boardSolution}
                 fen={post.boardFen}
               />
             ) : (
               <EditorOutput content={post.content} />
             )}
-            {post.boardSolution && (
-              <div className="mt-2">
+            {/* {post.boardSolution && (
+              <div className="mt-2 w-fit">
                 <Button
                   variant="outline"
-                  className="focus:ring-0"
+                  className="focus:ring-0 "
                   onClick={() => setSolutionVisible((prev) => !prev)}
                 >
                   {" "}
@@ -90,8 +91,8 @@ const Post: FC<PostProps> = ({
                   {post.boardSolution}
                 </div>
               </div>
-            )}
-            {pRef.current?.clientHeight === 520 ? (
+            )} */}
+            {pRef.current?.clientHeight === 520 && !isPostTypeChess ? (
               <div className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-white to-transparent" />
             ) : null}
           </div>

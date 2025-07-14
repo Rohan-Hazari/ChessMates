@@ -1,7 +1,6 @@
 "use client";
 import { DailyPuzzle } from "@prisma/client";
 import { FC, useState, useEffect } from "react";
-import { Chessboard } from "react-chessboard";
 import { Button } from "../ui/Button";
 import {
   Card,
@@ -14,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { useMobile } from "@/hooks/use-mobile";
 import { Badge } from "../ui/Badge";
 import { Chess } from "chess.js";
+import Board from "./Board";
 
 interface DailyPuzzleProps {
   puzzle: DailyPuzzle;
@@ -117,15 +117,7 @@ const DailyPuzzlePost: FC<DailyPuzzleProps> = ({
       <CardContent className="p-4 pt-0">
         <div className="grid md:grid-cols-2 gap-4">
           <div className="w-full flex flex-col items-center aspect-square max-w-[350px] mx-auto md:mx-0">
-            <Chessboard
-              position={boardPosition}
-              boardWidth={isMobile ? 300 : 350}
-              areArrowsAllowed={false}
-              onPieceDrop={onPieceDrop}
-            />
-            <Button onClick={resetBoard} className="mt-2">
-              Reset
-            </Button>
+            <Board fen={boardPosition} />
           </div>
           <div>
             {isHighlighted && (
