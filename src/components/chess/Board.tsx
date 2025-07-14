@@ -69,14 +69,34 @@ const Board: FC<BoardProps> = ({ fen }) => {
   function onSquareClick(square: Square) {
     setRightClickedSquares({});
 
-    // from square
     if (!moveFrom) {
       const hasMoveOptions = getMoveOptions(square);
-      if (hasMoveOptions) setMoveFrom(square);
+      if (hasMoveOptions) {
+        setMoveFrom(square);
+      } else {
+        setOptionSquares({});
+      }
+      return;
+    }
+    // clicks on the same piece again
+    if (moveFrom === square) {
+      setMoveFrom(null);
+      setOptionSquares({});
+      return;
+    }
+    // clicked on same colors piece eg white clicks on another white piece
+    const pieceOnClickedSquare = game.get(square);
+    if (pieceOnClickedSquare && pieceOnClickedSquare.color === game.turn()) {
+      const hasMoveOptions = getMoveOptions(square);
+      if (hasMoveOptions) {
+        setMoveFrom(square);
+      } else {
+        setMoveFrom(null);
+        setOptionSquares({});
+      }
       return;
     }
 
-    // to square
     if (!moveTo) {
       // check if valid move before showing dialog
       const moves = game.moves({
@@ -205,6 +225,12 @@ const Board: FC<BoardProps> = ({ fen }) => {
     }
   };
 
+  const handleReset = () => {
+    setMoveFrom(null);
+    setOptionSquares({});
+    setGame(new Chess(normalisedFen));
+  };
+
   return (
     <div className="flex flex-col justify-center ">
       <div className="max-h-[420px] h-fit max-w-[420px] m-auto md:m-0">
@@ -230,7 +256,7 @@ const Board: FC<BoardProps> = ({ fen }) => {
       </div>
       <div className="w-full mt-2 flex justify-center sm:justify-start gap-x-6 ">
         <Button onClick={handleUndo}>Back</Button>
-        <Button onClick={() => setGame(new Chess(normalisedFen))}>Reset</Button>
+        <Button onClick={handleReset}>Reset</Button>
         <Button onClick={handleRedo}>Forward</Button>
       </div>
     </div>
