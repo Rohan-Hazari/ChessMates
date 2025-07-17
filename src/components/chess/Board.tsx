@@ -233,7 +233,7 @@ const Board: FC<BoardProps> = ({ fen }) => {
 
   return (
     <div className="flex flex-col justify-center ">
-      <div className="max-h-[420px] h-fit max-w-[420px] m-auto md:m-0">
+      <div className="aspect-square w-full max-w-[420px] m-auto md:m-0">
         <Chessboard
           id="ClickToMove"
           animationDuration={200}
@@ -254,7 +254,7 @@ const Board: FC<BoardProps> = ({ fen }) => {
           showPromotionDialog={showPromotionDialog}
         />
       </div>
-      <div className="w-full mt-2 flex justify-center sm:justify-start gap-x-6 ">
+      <div className="w-full mt-6 flex justify-center sm:justify-start gap-x-6 ">
         <Button onClick={handleUndo}>Back</Button>
         <Button onClick={handleReset}>Reset</Button>
         <Button onClick={handleRedo}>Forward</Button>
