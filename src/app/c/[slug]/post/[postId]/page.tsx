@@ -1,6 +1,6 @@
 import CommentsSection from "@/components/CommentsSection";
 import EditorOutput from "@/components/EditorOutput";
-import ChessPostBoard from "@/components/chess/ChessPostBoard";
+import Board from "@/components/chess/Board";
 import PostVoteServer from "@/components/post-vote/PostVoteServer";
 import { buttonVariants } from "@/components/ui/Button";
 import { toast } from "@/hooks/use-toast";
@@ -92,8 +92,8 @@ const page = async ({ params }: pageProps) => {
           </h1>
 
           {post?.postType === "chess" ? (
-            <ChessPostBoard
-              boardSolution={post.boardSolution}
+            <Board
+              // boardSolution={post.boardSolution}
               fen={post.boardFen}
             />
           ) : (
