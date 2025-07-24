@@ -10,7 +10,5 @@ ChessMates is a comprehensive social media platform tailored for chess enthusias
 
 Thats it you should be good to go :)
 
-### Contribution
-Currently not open to contributions but feel free to raise any issue or start a discussion about a new feature/ideas. Would love to hear some advice on architecture or sys design of this website (I know nothing)
-
+Piece set used is [cburnnet](https://github.com/lichess-org/lila/tree/master/public/piece/cburnett)
 
