@@ -281,9 +281,12 @@ const Square = ({
   piece: Piece;
   onDrop: (item: PieceItem, position: Position) => void;
 }) => {
-  const [, drop] = useDrop(() => ({
+  const [{ isOver }, drop] = useDrop(() => ({
     accept: "piece",
     drop: (item: PieceItem) => onDrop(item, position),
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(), // `isOver` is true when a piece hovers over this square.
+    }),
   }));
 
   const isBlack = position && (position[0] + position[1]) % 2 === 1;
@@ -304,6 +307,9 @@ const Square = ({
         isBlack ? "bg-[#b58863]" : "bg-[#f0d9b5]"
       } flex items-center justify-center relative`}
     >
+      {isOver && (
+        <div className="absolute top-0 left-0 h-full w-full bg-green-500 opacity-50" />
+      )}
       {fileNotation && (
         <div
           className={`absolute top-0 left-1 text-xs font-bold ${
