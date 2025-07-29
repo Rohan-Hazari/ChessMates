@@ -56,8 +56,11 @@ export function formatTimeToNow(date: Date): string {
   });
 }
 
-export const convertBoardToFEN = (board: Piece[][]): string => {
-  return board
+export const convertBoardToFEN = (
+  board: Piece[][],
+  activeColor: "w" | "b" = "w"
+): string => {
+  let fen = board
     .map((row) => {
       let emptyCount = 0;
       return (
@@ -76,6 +79,8 @@ export const convertBoardToFEN = (board: Piece[][]): string => {
       );
     })
     .join("/");
+  fen += ` ${activeColor} - - 0 1`;
+  return fen;
 };
 
 export const convertFENToBoard = (fen: string): Piece[][] => {
@@ -102,8 +107,17 @@ export const convertFENToBoard = (fen: string): Piece[][] => {
   return board;
 };
 
+/** Clean up the solution string into individual move array like array like ["Nf3", "d5", "g3"] */
+export const formatPuzzleSolution = (solution: string): string[] => {
+  const moves = solution
+    .replace(/\d+\.\s?/g, "") // Removes "1. ", "2. ", etc.
+    .trim()
+    .split(" ");
+  return moves;
+};
+
 /** Extracts the very first name from url Ex chess from https://www.chess.com or docs from https://docs.chess.com */
-export const extractMainDomain = (url: string) => {
+export const extractMainDomain = (url: string): string => {
   const domain = url.split("//")[1]?.split(".com")[0];
   if (!domain) return "";
   const parts = domain.split(".");

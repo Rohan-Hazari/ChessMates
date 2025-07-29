@@ -12,20 +12,24 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/TextArea";
 import { useCustomToast } from "@/hooks/use-custom-toast";
 import { toast } from "@/hooks/use-toast";
-import { convertBoardToFEN, convertFENToBoard } from "@/lib/utils";
+import {
+  cn,
+  convertBoardToFEN,
+  convertFENToBoard,
+  formatPuzzleSolution,
+  normaliseFEN,
+} from "@/lib/utils";
 import { ChessPostPayload } from "@/lib/validators/chesspost";
 import { Board, Piece, PieceItem, Position } from "@/types/board";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
+import { Chess } from "chess.js";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { z } from "zod";
 
-// Maps each piece to its corresponding SVG image file path.
-// IMPORTANT: You need to create these SVG files and place them in your `public/pieces/` directory.
-// For example, the white king SVG should be at `public/pieces/wK.svg`.
 const pieceImagePaths = {
   K: "/pieces/wK.svg",
   Q: "/pieces/wQ.svg",
@@ -56,6 +60,7 @@ const CreateChessPuzzlePost = ({
   const [description, setDescription] = useState<string>("");
   const [boardSolution, setBoardSolution] = useState<string>("");
   const givenBoard = convertFENToBoard(fen);
+  const [solutionError, setSolutionError] = useState<string | null>(null);
   const [board, setBoard] = useState<Board>(
     givenBoard ?? [
       ["r", "n", "b", "q", "k", "b", "n", "r"],
@@ -108,9 +113,26 @@ const CreateChessPuzzlePost = ({
     }
   };
 
-  const { mutate: handlePost, isLoading } = useMutation({
+  const {
+    mutate: handlePost,
+    isLoading,
+    error,
+  } = useMutation({
     mutationFn: async () => {
+      if (boardSolution.trim() === "") {
+        throw new Error("Please provide the solution in SAN format.");
+      }
       const fen = convertBoardToFEN(board);
+      const moves = formatPuzzleSolution(boardSolution);
+      const chess = new Chess(normaliseFEN(fen));
+      for (const move of moves) {
+        const result = chess.move(move);
+        if (result === null) {
+          throw new Error(
+            `The move "${move}" is not a legal move. Please check your solution.`
+          );
+        }
+      }
       const payload: ChessPostPayload = {
         title,
         description,
@@ -147,14 +169,14 @@ const CreateChessPuzzlePost = ({
             description: "Community not found",
             variant: "destructive",
           });
+        } else {
+          return toast({
+            title: "Internal server error",
+            description:
+              "Something went wrong on our side, please try again later",
+            variant: "destructive",
+          });
         }
-      } else {
-        return toast({
-          title: "Internal server error",
-          description:
-            "Something went wrong on our side, please try again later",
-          variant: "destructive",
-        });
       }
     },
     onSuccess: () => {
@@ -170,6 +192,15 @@ const CreateChessPuzzlePost = ({
       }, 500);
     },
   });
+
+  useEffect(() => {
+    if (
+      error instanceof Error &&
+      (error.message.includes("solution") || error.message.includes("move"))
+    ) {
+      setSolutionError(error.message);
+    }
+  }, [error]);
 
   return (
     <DndProvider backend={HTML5Backend} options={{ enableMouseEvents: true }}>
@@ -208,9 +239,18 @@ const CreateChessPuzzlePost = ({
             htmlFor="Solution"
             placeholder="Example: 1.e4 e5 2.Nf3 Nc6 3.Bb5 Qxh7"
             value={boardSolution}
-            onChange={(e) => setBoardSolution(e.target.value)}
-            className="mt-4"
+            onChange={(e) => {
+              setBoardSolution(e.target.value);
+              setSolutionError(null);
+            }}
+            className={cn("mt-4", {
+              "border-destructive focus-visible:ring-destructive animate-shake ":
+                solutionError,
+            })}
           />
+          {solutionError && (
+            <p className="text-sm  text-red-500 mt-1">{solutionError}</p>
+          )}
         </CardContent>
         <CardFooter>
           <Button
