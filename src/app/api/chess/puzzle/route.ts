@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const { communityId, title, description, boardFen, boardSolution } =
       ChessPostValidator.parse(body);
 
-    const subscriptionExists = db.subscription.findFirst({
+    const subscriptionExists = await db.subscription.findFirst({
       where: {
         communityId,
         userId: session?.user.id,

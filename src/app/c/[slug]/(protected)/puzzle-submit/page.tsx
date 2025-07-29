@@ -32,7 +32,7 @@ const page = async ({ params }: pageProps) => {
       })
     : undefined;
 
-  const isSubscribed = !!!subscription;
+  const isSubscribed = !!subscription;
 
   return (
     <div>
