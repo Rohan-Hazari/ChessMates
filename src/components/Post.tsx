@@ -5,8 +5,6 @@ import { MessageSquare } from "lucide-react";
 import { FC, useRef, useState } from "react";
 import EditorOutput from "./EditorOutput";
 import PostVoteClient from "./post-vote/PostVoteClient";
-import ChessPostBoard from "./chess/ChessPostBoard";
-import { Button } from "./ui/Button";
 import Board from "./chess/Board";
 
 type PartialVote = Pick<Vote, "type">;

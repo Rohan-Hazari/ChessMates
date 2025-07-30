@@ -5,7 +5,6 @@ import { z } from "zod";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log(body);
 
     const { fen, title, theme, solution, mate_in_n, hint, difficulty } =
       CronPuzzleValidator.parse(body);

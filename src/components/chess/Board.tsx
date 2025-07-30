@@ -1,6 +1,6 @@
 "use client";
-import { MoveInput, SquareStyles } from "@/types/board";
-import { Chess, Move, Piece, Square } from "chess.js";
+import { SquareStyles } from "@/types/board";
+import { Chess, Move, Square } from "chess.js";
 import { FC, useState } from "react";
 import { Chessboard } from "react-chessboard";
 import { Button } from "../ui/Button";

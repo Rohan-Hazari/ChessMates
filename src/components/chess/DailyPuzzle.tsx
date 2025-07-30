@@ -12,7 +12,6 @@ import {
 import { cn } from "@/lib/utils";
 import { useMobile } from "@/hooks/use-mobile";
 import { Badge } from "../ui/Badge";
-import { Chess } from "chess.js";
 import Board from "./Board";
 
 interface DailyPuzzleProps {
@@ -25,50 +24,16 @@ const DailyPuzzlePost: FC<DailyPuzzleProps> = ({
   isHighlighted = false,
 }) => {
   const [showSolution, setShowSolution] = useState(false);
-  const [game, setGame] = useState<Chess | null>(null);
   const [boardPosition, setBoardPosition] = useState(puzzle.fen);
   const isMobile = useMobile();
 
   useEffect(() => {
     try {
-      const newGame = new Chess(puzzle.fen);
-      setGame(newGame);
       setBoardPosition(puzzle.fen);
     } catch (error) {
       console.error("Error initializing chess game:", error);
     }
   }, [puzzle.fen]);
-
-  const resetBoard = () => {
-    if (game) {
-      try {
-        game.load(puzzle.fen);
-        setBoardPosition(puzzle.fen);
-      } catch (error) {
-        console.error("Error resetting board:", error);
-      }
-    }
-  };
-
-  const onPieceDrop = (sourceSquare: string, targetSquare: string) => {
-    if (!game) return false;
-
-    try {
-      const move = game.move({
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: "q",
-      });
-
-      if (move === null) return false;
-
-      setBoardPosition(game.fen());
-      return true;
-    } catch (error) {
-      console.error("Error making move:", error);
-      return false;
-    }
-  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
