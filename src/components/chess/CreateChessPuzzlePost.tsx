@@ -73,6 +73,7 @@ const CreateChessPuzzlePost = ({
       ["R", "N", "B", "Q", "K", "B", "N", "R"],
     ]
   );
+  const [activeColor, setActiveColor] = useState<"w" | "b">("w");
 
   const { loginToast } = useCustomToast();
   const router = useRouter();
@@ -122,7 +123,7 @@ const CreateChessPuzzlePost = ({
       if (boardSolution.trim() === "") {
         throw new Error("Please provide the solution in SAN format.");
       }
-      const fen = convertBoardToFEN(board);
+      const fen = convertBoardToFEN(board, activeColor);
       const moves = formatPuzzleSolution(boardSolution);
       const chess = new Chess(normaliseFEN(fen));
       for (const move of moves) {
@@ -231,13 +232,32 @@ const CreateChessPuzzlePost = ({
             <div className="flex flex-col items-center">
               <Chessboard board={board} onDrop={handleDrop} />
               <DropZone onDrop={handleRemovePiece} />
+              <div className="flex gap-4 mt-4 w-full justify-center">
+                <p className="font-semibold text-lg">Turn to move:</p>
+                <input
+                  onClick={() => setActiveColor("w")}
+                  type="radio"
+                  name="activeColor"
+                  id="White"
+                  defaultChecked
+                />
+                <label htmlFor="White">White</label>
+                <input
+                  onClick={() => setActiveColor("b")}
+                  type="radio"
+                  name="activeColor"
+                  id="Black"
+                />
+                <label htmlFor="Black">Black</label>
+              </div>
             </div>
             <SidePanel />
           </div>
+
           <Textarea
             required
             htmlFor="Solution"
-            placeholder="Example: 1.e4 e5 2.Nf3 Nc6 3.Bb5 Qxh7"
+            placeholder="Example: 1.e4 2.Nf3 3.Bb5 "
             value={boardSolution}
             onChange={(e) => {
               setBoardSolution(e.target.value);
