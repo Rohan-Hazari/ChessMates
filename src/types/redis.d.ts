@@ -7,7 +7,8 @@ export type CachedPost = {
   authorUsername: string;
   content: string;
   createdAt: Date;
-  postType?: string | null;
-  boardFen?: string | null;
-  gamePGN?: string | null;
+  postType?: string ;
+  boardFen?: string ;
+  boardSolution?: string;
+  gamePGN?: string;
 };

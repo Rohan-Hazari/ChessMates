@@ -1,12 +1,12 @@
 import CommentsSection from "@/components/CommentsSection";
 import EditorOutput from "@/components/EditorOutput";
-import Board from "@/components/chess/Board";
+import ChessContent from "@/components/chess/ChessContent";
 import PostVoteServer from "@/components/post-vote/PostVoteServer";
 import { buttonVariants } from "@/components/ui/Button";
 import { toast } from "@/hooks/use-toast";
 import { db } from "@/lib/db";
 import { redis } from "@/lib/redis";
-import { formatTimeToNow } from "@/lib/utils";
+import {formatTimeToNow } from "@/lib/utils";
 import { CachedPost } from "@/types/redis";
 import { Post, User, Vote } from "@prisma/client";
 import { ArrowBigDown, ArrowBigUp, Loader2 } from "lucide-react";
@@ -92,9 +92,8 @@ const page = async ({ params }: pageProps) => {
           </h1>
 
           {post?.postType === "chess" ? (
-            <Board
-              // boardSolution={post.boardSolution}
-              fen={post.boardFen}
+            <ChessContent
+              post={post} 
             />
           ) : (
             <EditorOutput

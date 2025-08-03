@@ -94,6 +94,7 @@ export async function PATCH(req: Request) {
         createdAt: updatedPost.createdAt,
         ...(updatedPost.postType && { postType: updatedPost.postType }),
         ...(updatedPost.boardFen && { boardFen: updatedPost.boardFen }),
+        ...(updatedPost.boardSolution && {boardSolution : updatedPost.boardSolution}),
         ...(updatedPost.gamePGN && { gamePGN: updatedPost.gamePGN }),
       };
       await redis.hset(`post:${postId}`, cachePayload);

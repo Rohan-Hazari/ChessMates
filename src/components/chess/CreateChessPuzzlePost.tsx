@@ -257,7 +257,7 @@ const CreateChessPuzzlePost = ({
           <Textarea
             required
             htmlFor="Solution"
-            placeholder="Example: 1.e4 2.Nf3 3.Bb5 "
+            placeholder="Example: 1.e4 e5 2.Nf3 Nf6 3.Bb5 a6 "
             value={boardSolution}
             onChange={(e) => {
               setBoardSolution(e.target.value);

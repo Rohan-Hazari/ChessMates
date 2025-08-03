@@ -53,7 +53,6 @@ const PostFeed: FC<PostFeedProps> = ({
 
         return data as ExtendedPost[];
       },
-      // options
       {
         //   function to determine pageParam for nextPage
         getNextPageParam: (lastPages, pages) => {

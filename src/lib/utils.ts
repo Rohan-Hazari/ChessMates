@@ -110,9 +110,9 @@ export const convertFENToBoard = (fen: string): Piece[][] => {
 /** Clean up the solution string into individual move array like array like ["Nf3", "d5", "g3"] */
 export const formatPuzzleSolution = (solution: string): string[] => {
   const moves = solution
-    .replace(/\d+\.\s?/g, "") // Removes "1. ", "2. ", etc.
+    .replace(/\d+\.\s*/g, "") // Removes "1. ", "2.", etc.
     .trim()
-    .split(" ");
+    .split(/\s+/); 
   return moves;
 };
 
