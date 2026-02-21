@@ -1,5 +1,5 @@
 "use client";
-import {  formatTimeToNow } from "@/lib/utils";
+import { formatTimeToNow } from "@/lib/utils";
 import { Post, User, Vote } from "@prisma/client";
 import { MessageSquare } from "lucide-react";
 import { FC, useRef } from "react";
@@ -28,8 +28,8 @@ const ContentPost: FC<PostProps> = ({
   const isPostTypeChess = post.postType === "chess";
 
   return (
-    <div className="rounded-md bg-white shadow">
-      <div className=" px-2 sm:px-2 py-4 flex justify-between">
+    <div className="group rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200">
+      <div className="px-3 sm:px-4 py-4 flex justify-between">
         <PostVoteClient
           postId={post.id}
           initialVote={currentVote?.type}
@@ -37,24 +37,30 @@ const ContentPost: FC<PostProps> = ({
         />
 
         <div className="w-0 flex-1">
-          <div className="max-h-40 mt-1 text-xs text-gray-500">
+          <div className="max-h-40 mt-1 text-xs text-slate-500 flex items-center flex-wrap gap-1">
             {communityName ? (
               <>
                 <a
-                  className="underline text-zinc-900 text-sm underline-offset-2"
+                  className="font-semibold text-slate-700 hover:text-amber-600 transition-colors text-sm"
                   href={`/c/${communityName}`}
                 >
                   c/{communityName}
                 </a>
-                <span className="px-1">●</span>
+                <span className="text-slate-300">·</span>
               </>
             ) : null}
-            <span>Posted by u/{post.author.name}</span>{" "}
-            {formatTimeToNow(new Date(post.createdAt))}
+            <span>
+              Posted by{" "}
+              <span className="font-medium text-slate-600">
+                u/{post.author.name}
+              </span>
+            </span>
+            <span className="text-slate-300">·</span>
+            <span>{formatTimeToNow(new Date(post.createdAt))}</span>
           </div>
           {/* a tag to hard refresh the comments */}
           <a href={`/c/${communityName}/post/${post.id}`}>
-            <h1 className="text-lg font-semibold py-2 leading-6 text-gray-900">
+            <h1 className="text-lg font-semibold py-2 leading-6 text-slate-900 group-hover:text-amber-700 transition-colors">
               {post.title}
             </h1>
           </a>
@@ -74,9 +80,9 @@ const ContentPost: FC<PostProps> = ({
         </div>
       </div>
 
-      <div className="bg-gray-50 z-20 text-sm p-4 sm:px-6">
+      <div className="border-t border-slate-100 text-sm px-4 sm:px-6 py-3">
         <a
-          className="w-fit flex items-center gap-2"
+          className="w-fit flex items-center gap-2 text-slate-500 hover:text-amber-600 transition-colors"
           href={`/c/${communityName}/post/${post.id}`}
         >
           <MessageSquare className="h-4 w-4" /> {commentAmt} comments
