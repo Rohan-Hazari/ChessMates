@@ -6,6 +6,7 @@ import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { Badge } from "@/components/ui/Badge";
 
 interface PageProps {
   params: {
@@ -20,10 +21,6 @@ const page = async ({ params }: PageProps) => {
     where: {
       name: slug,
     },
-    // if u dont use include, community.post will return undefined due to performance reason
-    // include basically fetches data from posts model which in turn fetches data from votes,comments,author,community model
-    // computationally expensive, also known as N+1 problem
-    // prisma handles this by batching these queries
     include: {
       posts: {
         include: {
@@ -35,7 +32,6 @@ const page = async ({ params }: PageProps) => {
         orderBy: {
           createdAt: "desc",
         },
-        //  limits how much rows to get
         take: INFINITE_SCROLLING_PAGINATION_RESULT,
       },
     },
@@ -47,11 +43,19 @@ const page = async ({ params }: PageProps) => {
 
   return (
     <>
-      <h1 className="font-bold text-3xl md:text-4xl h-14">
-        c/{community.name}
-      </h1>
+      <div className="flex items-center gap-3">
+        <h1 className="font-bold text-3xl md:text-4xl text-slate-900">
+          c/{community.name}
+        </h1>
+        <Badge
+          variant="secondary"
+          className="bg-amber-100 text-amber-700 border-amber-200"
+        >
+          Community
+        </Badge>
+      </div>
       <CreatePost session={session} />
-      {/* Show posts in user feed  */}
+      {/* Show posts in user feed */}
       <Suspense fallback={<FeedSkeletonLoading />}>
         <PostFeed
           initialPosts={community.posts}
